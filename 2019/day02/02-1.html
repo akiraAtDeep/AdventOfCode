@@ -1,0 +1,29 @@
+<html>
+	<body>
+		<textarea id='input'></textarea>
+		<button onclick="myFunction()">Click me</button>
+		<textarea id='res' readonly></textarea>
+		<script>
+			function myFunction() {
+				var input = document.getElementById("input").value;
+				var intcodes = input.split(',');
+				for (var i=0; i<intcodes.length; i=i+4){
+
+					var operation = parseInt(intcodes[i]);
+					var operator0 = parseInt(intcodes[i+1]);
+					var operator1 = parseInt(intcodes[i+2]);
+					var result = parseInt(intcodes[i+3]);
+					if (operation === 1) {
+						intcodes[result] = parseInt(intcodes[operator0]) + parseInt(intcodes[operator1]);
+					} else if (operation === 2) {
+						intcodes[result] = parseInt(intcodes[operator0]) * parseInt(intcodes[operator1]);
+					} else if (operation === 99) {
+						break;
+					}
+				}
+				console.log(intcodes);
+				document.getElementById("res").value = intcodes.toString();
+			}
+		</script>
+	</body>
+</html>

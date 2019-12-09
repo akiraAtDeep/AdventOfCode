@@ -1,0 +1,95 @@
+<html>
+    <body>
+        <textarea id="input">COM)B
+B)C
+C)D
+D)E
+E)F
+B)G
+G)H
+D)I
+E)J
+J)K
+K)L
+K)YOU
+I)SAN</textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        <textarea id="res" readonly></textarea>
+
+        <script>
+            var paths = new Object();
+            function myFunction() {
+                var input = document.getElementById('input').value.split('\n');
+                var relationship = new Object();
+                var children = new Array();
+                input.forEach(function (element) {
+                    var relation = element.split(')');
+                    relationship[relation[1]] = {'father': relation[0]};
+                    children.push(relation[1]);
+                });
+
+                //trovo il primo figlio nell'albero
+                var firstSon = '';
+                for (var son in relationship) {
+                    if (relationship[son].father === 'COM') {
+                        firstSon = son;
+                        relationship[son].orbits = 1;
+                    }
+                }
+
+                findChildren(relationship, firstSon);
+
+                paths.YOU = new Array();
+                paths.SAN = new Array();
+                pathToCenter(relationship, 'YOU', 'YOU');
+                pathToCenter(relationship, 'SAN', 'SAN');
+                
+                //trovo il primo nodo in comune fra i due percorsi
+                var minNode = '';
+                for (var a = 0; a < paths.YOU.length; a++) {
+                    for (var b = 0; b < paths.SAN.length; b++) {
+                        if(paths.YOU[a] === paths.SAN[b]){
+                            minNode = paths.YOU[a];
+                            a = paths.YOU.length;
+                        }
+                    }
+                }
+
+                console.log(paths.YOU.indexOf(minNode) + paths.SAN.indexOf(minNode));
+
+                document.getElementById('res').value = paths.YOU.indexOf(minNode) + paths.SAN.indexOf(minNode);
+
+            }
+            //questa funzione, dato un padre, trova tutti i figli e setta la distanza dal centro in orbite
+            //poi richiama se stessa sui figli fino a quando non ha girato tutto l'albero.
+            function findChildren(relationship, father) {
+                var children = new Array();
+                for (var son in relationship) {
+                    if (relationship[son].father === father) {
+                        relationship[son].orbits = relationship[father].orbits + 1;
+                        children.push(son);
+                    }
+                }
+
+                children.forEach(function (element) {
+                    findChildren(relationship, element);
+                });
+            }
+            //questa funzione crea un array con tutti i punti da un certo figlio al centro
+            function pathToCenter(relationship, who, path) {
+                var next = '';
+                for (var son in relationship) {
+                    if (son === who) {
+                        paths[path].push(relationship[son].father);
+                        next = relationship[son].father;
+                    }
+                }
+
+                if (next !== 'COM') {
+                    pathToCenter(relationship, next, path);
+                }
+
+            }
+        </script>
+    </body>
+</html>

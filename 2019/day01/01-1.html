@@ -1,0 +1,20 @@
+<html>
+	<body>
+		<textarea id='input'></textarea>
+		<button onclick="myFunction()">Click me</button>
+		<script>
+			function myFunction() {
+				var input = document.getElementById("input").value;
+				var masses = input.split('\n');
+				var total = 0;
+				var sum =0;
+
+				masses.forEach(function(element){
+					total = total + ( Math.floor(element/3) - 2 );
+				});
+
+				console.log('totale senza carburante: ' + total);
+			}
+		</script>
+	</body>
+</html>

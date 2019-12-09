@@ -1,0 +1,47 @@
+<html>
+	<body>
+		<textarea id='input'>264793-803935</textarea><textarea id='res' readonly></textarea>
+		<button onclick="myFunction()">Click me</button>
+		<script>
+			function myFunction() {
+				var inputs = document.getElementById("input").value.split('-');
+
+				var res = 0;
+
+				for (var i=inputs[0]; i<inputs[1]; i++) {
+				
+					//con questo blocco individuo se c'e' una e una sola copia di cifre uguali
+					var same = false;
+					var nsame = 0;
+					var digits = i.toString().split('');
+					for (var a=0; a<digits.length-1; a++) {
+						if (digits[a] === digits[a+1]) {
+							nsame++;
+							if (nsame === 1) {
+								same = true;
+							}
+						}
+					}
+					
+					//questo individua se le cifre non diminuiscono procedendo nel numero
+					var increase = true;
+					var lastDigit = digits[0];
+					for (var a=1; a<digits.length; a++) {
+						if (digits[a] < lastDigit && increase) {
+							increase = false;
+						}
+						lastDigit = digits[a];
+					}
+					
+					if (increase && same) {
+						res++;
+					}
+					
+				}
+				
+				console.log(res);
+				document.getElementById("res").value = res;
+			}
+		</script>
+	</body>
+</html>

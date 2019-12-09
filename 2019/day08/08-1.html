@@ -1,0 +1,50 @@
+<html>
+    <body>
+        <textarea id="input">123456789012</textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        <textarea id="res" readonly></textarea>
+
+        <script>
+            
+            function myFunction() {
+				input = document.getElementById('input').value.split('');
+				var nPixel = 25*6;
+				var nLayers = input.length/nPixel;
+				var layers = new Array();
+				var index = 0;
+				for (var i=0; i<nLayers; i++) {
+					layers.push(new Array());
+					for (var a=0; a<input.length/nLayers; a++) {
+						index++;
+						layers[i].push(input[index]);
+					}
+				}
+				
+				var minZeros = 1000000;
+				var res = 0;
+				console.log(layers);
+				layers.forEach(function(elemnet){
+					var zero = 0;
+					var one = 0;
+					var two = 0;
+					elemnet.forEach(function(element){
+						if (element === '0') {
+							zero++;
+						} else if (element === '1') {
+							one++;
+						} else if (element === '2') {
+							two++;
+						}
+					});
+					if (zero < minZeros) {
+						minZeros = zero;
+						res = one * two;
+					}
+				});
+				document.getElementById('res').value = res;
+				console.log(res);
+            }
+
+        </script>
+    </body>
+</html>

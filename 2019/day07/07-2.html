@@ -1,0 +1,172 @@
+<html>
+    <body>
+        program:
+        <textarea id="program">3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5</textarea>
+        <!--input:
+        <input type="text" id="input" value="9,8,7,6,5"/>-->
+        <button onclick="myFunction()">DoIt!</button>
+        <textarea id="res" readonly></textarea>
+
+        <script>
+            var usePhase = [true, true, true, true, true];
+            var lastOut = 0;
+            var programs = new Array();
+            var exit = false;
+            var amp = 0;
+            var pointer = [0, 0, 0, 0, 0];
+            var out = '';
+            var input = '';
+            function myFunction() {
+
+                document.getElementById('res').value = out;
+
+
+                allResult = new Array();
+
+                var res = new Array();
+                for (var a = 5; a < 10; a++) {
+                    for (var b = 5; b < 10; b++) {
+                        for (var c = 5; c < 10; c++) {
+                            for (var d = 5; d < 10; d++) {
+                                for (var e = 5; e < 10; e++) {
+                                    var asd = [a, b, c, d, e];
+                                    if (asd.indexOf(5) !== -1 &&
+                                            asd.indexOf(6) !== -1 &&
+                                            asd.indexOf(7) !== -1 &&
+                                            asd.indexOf(8) !== -1 &&
+                                            asd.indexOf(9) !== -1) {
+                                        res.push(asd);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                res.forEach(function (element) {
+                    doTheJob(element);
+                    allResult.push({'input': element.join(''), 'res': out});
+
+                });
+                //console.log(allResult);
+                var max = 0;
+                var king = '';
+
+                allResult.forEach(function (element) {
+                    if (max < parseInt(element.res)) {
+                        max = parseInt(element.res);
+                        king = element.input;
+                    }
+                });
+
+                document.getElementById('res').value = max;
+
+                console.log('end');
+
+            }
+
+            function doTheJob(phase) {
+                usePhase = [true, true, true, true, true];
+                lastOut = 0;
+                programs = new Array();
+                var exit = false;
+                var amp = 0;
+                pointer = [0, 0, 0, 0, 0];
+                out = '';
+                input = phase;
+                var exit = false;
+                amp = 0;
+                pointer = [0, 0, 0, 0, 0];
+                while (!exit) {
+                    if (programs[amp] === undefined) {
+                        programs[amp] = document.getElementById('program').value.split(',');
+                    }
+                    //element.forEach(function (element) {
+                    for (var i = pointer[amp]; i < programs[amp].length; ) {
+
+                        var tmp = programs[amp][i].toString();
+                        var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
+                        exit = amp === 4 && operation === 99 ? true : false;
+                        var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
+                        var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
+                        var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
+
+                        i = stuff(operation, mode1, mode2, mode3, i, amp);
+                    }
+                    amp = amp === 4 ? 0 : amp + 1;
+                }
+            }
+
+            function stuff(operation, mode1, mode2, mode3, i, amp) {
+                var program = programs[amp];
+                if (operation === 1) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    program[pos3] = parseInt(program[pos1]) + parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 2) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    program[pos3] = parseInt(program[pos1]) * parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 3) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    program[pos1] = usePhase[amp] ? input[amp] : lastOut;
+                    usePhase[amp] = false;
+                    i = i + 2;
+                } else if (operation === 4) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    if (amp === 4) {
+                        out = program[pos1];
+                    }
+                    lastOut = program[pos1];
+                    pointer[amp] = i + 2;
+                    i = programs[amp].length;
+                } else if (operation === 5) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    if (parseInt(program[pos1]) > 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 6) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    if (parseInt(program[pos1]) === 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 7) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    if (parseInt(program[pos1]) < parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 8) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    if (parseInt(program[pos1]) === parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 99) {
+                    i = program.length;
+                }
+
+                return(i);
+            }
+
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,125 @@
+<html>
+	<body>
+		<textarea id='input'>R8,U5,L5,D3
+U7,R6,D4,L4</textarea>
+		<button onclick="myFunction()">Click me</button>
+		<textarea id='res' readonly></textarea><br>
+		<canvas id="myCanvas" width="200" height="100" style="border:1px solid #000000;">
+</canvas>
+		<script>
+				var c = document.getElementById("myCanvas");
+				var ctx = c.getContext("2d");
+				function myFunction() {
+				
+				var input = document.getElementById("input").value;
+				var wires = input.split('\n');
+				var wire0 = wires[0].split(',');
+				var wire1 = wires[1].split(',');
+				
+				var size0 = findSize(wire0);
+				var size1 = findSize(wire1);
+				
+				var maxX = size0.maxX > size1.maxX ? size0.maxX : size1.maxX;
+				var maxY = size0.maxY > size1.maxY ? size0.maxY : size1.maxY;
+				var minX = size0.minX < size1.minX ? size0.minX : size1.minX;
+				var minY = size0.minY < size1.minY ? size0.minY : size1.minY;
+				
+				var width = maxX + Math.abs(minX);
+				var heigth = maxY + Math.abs(minY);
+				
+				var h1 = heigth + 10;
+				var w1 = width + 10;
+				
+				
+				
+				c.width = w1;
+    			c.height = h1;
+
+				var y = Math.floor(h1/2 + heigth/2);
+				var x = Math.floor(w1/2 - width/2);
+				
+				draw(wire0,x,y);
+				ctx.fillStyle = "red";
+				var cross = draw(wire1,x,y);
+				
+				var minDist = 100000000;
+				
+				cross.forEach(function(element){
+					var dist = (element.x > x ? element.x : x) - (element.x < x ? element.x : x) +
+					(element.y > y ? element.y : y) - (element.y < y ? element.y : y);
+					minDist = minDist < dist ? minDist : dist;
+				});
+				
+				console.log(minDist);
+				document.getElementById("res").value = minDist;
+
+			};
+			
+			function draw(wire,x,y) {
+				var cross = new Array();
+				wire.forEach(function(element){
+					for (var i=0; i<parseInt(element.substr(1, element.length-1)); i++){
+						switch(element.substr(0, 1)) {
+							case 'R':
+								x++;
+								break;
+							case 'L':
+								x--;
+								break;
+							case 'U':
+								y--;
+								break;
+							case 'D':
+								y++;
+								break;
+						}
+						
+						var p = ctx.getImageData(x, y, 1, 1);
+						if (p.data[0] === 0 && p.data[1] === 0 && p.data[2] === 0 && p.data[3] === 255) {
+							cross.push({'x':x,'y':y});
+						}
+						
+						ctx.fillRect(x,y,1,1);
+					}
+				});
+				return(cross);
+			};
+			
+			
+			function findSize (wire) {
+				var x = 0;
+				var y = 0;
+				var minX = 0;
+				var maxX = 0;
+				var minY = 0;
+				var maxY = 0;
+				wire.forEach(function(element){
+					switch(element.substr(0, 1)) {
+						case 'R':
+							x = x + parseInt(element.substr(1, element.length-1));
+							break;
+						case 'L':
+							x = x - parseInt(element.substr(1, element.length-1));
+							break;
+						case 'U':
+							y = y - parseInt(element.substr(1, element.length-1));
+							break;
+						case 'D':
+							y = y + parseInt(element.substr(1, element.length-1));
+							break;
+					}
+					minX = minX < x ? minX : x;
+					maxX = maxX > x ? maxX : x;
+					minY = minY < y ? minY : y;
+					maxY = maxY > y ? maxY : y;
+				});
+				
+				return ({'minX':minX, 'maxX':maxX, 'minY':minY, 'maxY':maxY});
+				
+			};
+			
+
+			
+		</script>
+	</body>
+</html>

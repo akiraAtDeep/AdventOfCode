@@ -1,0 +1,102 @@
+<html>
+    <body>
+        program:
+        <textarea id="program">1002,4,3,4,33</textarea>
+        input:
+        <input type="number" id="input" value="1"/>
+        <button onclick="myFunction()">DoIt!</button>
+        <textarea id="res" readonly></textarea>
+
+        <script>
+            var program = '';
+            var input = '';
+            var out = '';
+            function myFunction() {
+                program = document.getElementById('program').value.split(',');
+                input = document.getElementById('input').value;
+                out = '';
+                document.getElementById('res').value = out;
+                for (var i = 0; i < program.length; ) {
+
+                    var tmp = program[i].toString();
+                    var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
+                    var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
+                    var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
+                    var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
+
+                    i = stuff(operation, mode1, mode2, mode3, i);
+
+                }
+                //console.log(program.join());
+                console.log('end');
+
+            }
+
+            function stuff(operation, mode1, mode2, mode3, i) {
+                if (operation === 1) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    program[pos3] = parseInt(program[pos1]) + parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 2) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    program[pos3] = parseInt(program[pos1]) * parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 3) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    program[pos1] = input;
+                    i = i + 2;
+                } else if (operation === 4) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    out = out + program[pos1] + ';';
+                    document.getElementById('res').value = out;
+                    i = i + 2;
+                } else if (operation === 5) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    if (parseInt(program[pos1]) > 0) {
+                       i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 6) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    if (parseInt(program[pos1]) === 0) {
+                       i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 7) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    if (parseInt(program[pos1]) < parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 8) {
+                    var pos1 = mode1 === 0 ? (parseInt(program[i + 1])) : (i + 1);
+                    var pos2 = mode2 === 0 ? (parseInt(program[i + 2])) : (i + 2);
+                    var pos3 = mode3 === 0 ? (parseInt(program[i + 3])) : (i + 3);
+                    if (parseInt(program[pos1]) === parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 99) {
+                    i = program.length;
+                }
+
+                return(i);
+            }
+
+        </script>
+    </body>
+</html>

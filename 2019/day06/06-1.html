@@ -1,0 +1,65 @@
+<html>
+    <body>
+        <textarea id="input">COM)B
+B)C
+C)D
+D)E
+E)F
+B)G
+G)H
+D)I
+E)J
+J)K
+K)L</textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        <textarea id="res" readonly></textarea>
+
+        <script>
+            function myFunction() {
+                var input = document.getElementById('input').value.split('\n');
+                var relationship = new Object();
+                var children = new Array();
+                input.forEach(function (element) {
+                    var relation = element.split(')');
+                    relationship[relation[1]] = {'father': relation[0]};
+                    children.push(relation[1]);
+                });
+                
+                //trovo il primo figlio nell'albero
+                var firstSon = '';
+                for (var son in relationship) {
+                    if (relationship[son].father === 'COM') {
+                        firstSon = son;
+                        relationship[son].orbits = 1;
+                    }
+                }
+
+                findChildren(relationship, firstSon);
+                
+                //trovo la somma di tutte le orbite dell'albero
+                var orbits = 0;
+                for (var son in relationship) {
+                    orbits = orbits + relationship[son].orbits;
+                }
+                
+                document.getElementById('res').value = orbits;
+
+            }
+            //questa funzione, dato un padre, trova tutti i figli e setta la distanza dal centro in orbite
+            //poi richiama se stessa sui figli fino a quando non ha girato tutto l'albero.
+            function findChildren(relationship, father) {
+                var children = new Array();
+                for (var son in relationship) {
+                    if (relationship[son].father === father) {
+                        relationship[son].orbits = relationship[father].orbits + 1;
+                        children.push(son);
+                    }
+                }
+
+                children.forEach(function (element) {
+                    findChildren(relationship, element);
+                });
+            }
+        </script>
+    </body>
+</html>

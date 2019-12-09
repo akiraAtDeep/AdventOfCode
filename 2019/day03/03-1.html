@@ -1,0 +1,145 @@
+<html>
+	<body>
+		<textarea id='input'>R8,U5,L5,D3
+U7,R6,D4,L4</textarea>
+		<button onclick="myFunction()">Click me</button>
+		<textarea id='res' readonly></textarea>
+		<script>
+			var field = new Array();
+				function myFunction() {
+				
+				var input = document.getElementById("input").value;
+				var wires = input.split('\n');
+				var wire0 = wires[0].split(',');
+				var wire1 = wires[1].split(',');
+				
+				var size0 = findSize(wire0);
+				var size1 = findSize(wire1);
+				
+				var maxX = size0.maxX > size1.maxX ? size0.maxX : size1.maxX;
+				var maxY = size0.maxY > size1.maxY ? size0.maxY : size1.maxY;
+				var minX = size0.minX < size1.minX ? size0.minX : size1.minX;
+				var minY = size0.minY < size1.minY ? size0.minY : size1.minY;
+				
+				var width = maxX + Math.abs(minX);
+				var heigth = maxY + Math.abs(minY);
+				
+				var asd = 1.5;
+				
+				var h1 = Math.floor(heigth*asd);
+				var w1 = Math.floor(width*asd);
+				
+				console.log(heigth + ' - ' + width);
+				
+				field = new Array();
+				for(var y=0; y<h1; y++) {
+					var row = new Array();
+					for(var x=0; x<w1; x++) {
+						row.push('.');
+					}
+					field.push(row);
+				}
+				
+				var y = Math.floor(h1/2 + heigth/2);
+				var x = Math.floor(w1/2 - width/2);
+				
+				draw(wire0,x,y);
+				var cross = draw(wire1,x,y);
+				
+				var minDist = 100000000;
+				
+				cross.forEach(function(element){
+					var dist = (element.x > x ? element.x : x) - (element.x < x ? element.x : x) +
+					(element.y > y ? element.y : y) - (element.y < y ? element.y : y);
+					minDist = minDist < dist ? minDist : dist;
+				});
+				
+				console.log(minDist);
+				
+				print();
+			};
+			
+			function draw(wire,x,y) {
+				var cross = new Array();
+				wire.forEach(function(element){
+					for (var i=0; i<parseInt(element.substr(1, element.length-1)); i++)
+					switch(element.substr(0, 1)) {
+						case 'R':
+							x++;
+							if (field[y][x] !== '.') {
+								cross.push({'x':x,'y':y});
+							}
+							field[y][x] = 'o';
+							break;
+						case 'L':
+							x--;
+							if (field[y][x] !== '.') {
+								cross.push({'x':x,'y':y});
+							}
+							field[y][x] = 'o';
+							break;
+						case 'U':
+							y--;
+							if (field[y][x] !== '.') {
+								cross.push({'x':x,'y':y});
+							}
+							field[y][x] = 'o';
+							break;
+						case 'D':
+							y++;
+							if (field[y][x] !== '.') {
+								cross.push({'x':x,'y':y});
+							}
+							field[y][x] = 'o';
+							break;
+					}
+				});
+				return(cross);
+			};
+			
+			
+			function findSize (wire) {
+				var x = 0;
+				var y = 0;
+				var minX = 0;
+				var maxX = 0;
+				var minY = 0;
+				var maxY = 0;
+				wire.forEach(function(element){
+					switch(element.substr(0, 1)) {
+						case 'R':
+							x = x + parseInt(element.substr(1, element.length-1));
+							break;
+						case 'L':
+							x = x - parseInt(element.substr(1, element.length-1));
+							break;
+						case 'U':
+							y = y - parseInt(element.substr(1, element.length-1));
+							break;
+						case 'D':
+							y = y + parseInt(element.substr(1, element.length-1));
+							break;
+					}
+					minX = minX < x ? minX : x;
+					maxX = maxX > x ? maxX : x;
+					minY = minY < y ? minY : y;
+					maxY = maxY > y ? maxY : y;
+				});
+				
+				return ({'minX':minX, 'maxX':maxX, 'minY':minY, 'maxY':maxY});
+				
+			};
+			
+			function print() {
+				var str = '';
+				field.forEach(function(element){
+					str = str + element.join('') + '\n';
+				});
+				console.log(str);
+			}
+			
+			
+			
+		</script>
+	</body>
+</html>
