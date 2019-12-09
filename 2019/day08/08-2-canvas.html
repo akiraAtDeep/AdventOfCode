@@ -1,0 +1,76 @@
+<html>
+    <body>
+        <textarea id="input">0222112222120000</textarea><br>
+        width: <input type="number" id="width" value="2"/>heigth: <input type="number" id="heigth" value="2"/><br>
+        magnification: <input type="number" id="magnification" value="5"/>
+        <button onclick="myFunction()">DoIt!</button><br>
+        <canvas id="myCanvas" width="10" height="10" style="border:1px solid #c3c3c3;">
+            Your browser does not support the canvas element.
+        </canvas><br>
+
+        <script>
+
+            function myFunction() {
+                input = document.getElementById('input').value.split('');
+                var rows = document.getElementById('heigth').value;
+                var columns = document.getElementById('width').value;
+                ;
+                var nPixel = rows * columns;
+                var nLayers = input.length / nPixel;
+                var layers = new Array();
+                var index = 0;
+                for (var i = 0; i < nLayers; i++) {
+                    layers.push(new Array());
+                    for (var a = 0; a < input.length / nLayers; a++) {
+                        layers[i].push(input[index]);
+                        index++;
+                    }
+                }
+
+
+
+
+                var image = new Array();
+                for (var y = 0; y < rows; y++) {
+                    var row = new Array();
+                    for (var x = 0; x < columns; x++) {
+                        row.push('0');
+                    }
+                    image.push(row);
+                }
+
+
+                for (var i = layers.length - 1; i >= 0; i--) {
+                    var index = 0;
+                    for (var y = 0; y < rows; y++) {
+                        for (var x = 0; x < columns; x++) {
+                            if (layers[i][index] !== '2') {
+                                image[y][x] = layers[i][index];
+                            }
+                            index++;
+                        }
+                    }
+                }
+
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
+                
+                var magnification = document.getElementById('magnification').value;;
+                
+                c.height = rows * magnification;
+                c.width = columns * magnification;
+
+               
+                for (var y = 0; y < rows; y++) {
+                    var tmp = '';
+                    for (var x = 0; x < columns; x++) {
+                        if (image[y][x] === '1') {
+                            ctx.fillRect(x * magnification, y * magnification, 1 * magnification, 1 * magnification);
+                        }
+                    }
+                }
+            }
+
+        </script>
+    </body>
+</html>
