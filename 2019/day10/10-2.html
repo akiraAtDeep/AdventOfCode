@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <style>
+            textarea {
+                font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+            }
+        </style>
+    </head>
+    <body onload="resizeTextArea()">
+        <textarea onchange="resizeTextArea()" id="input">.#..##.###...#######
+##.############..##.
+.#.######.########.#
+.###.#######.####.#.
+#####.##.#.##.###.##
+..#####..#.#########
+####################
+#.####....###.#.#.##
+##.#################
+#####.##.###..####..
+..######..##.#######
+####.##.####...##..#
+.#####..#.######.###
+##...#.##########...
+#.##########.#######
+.####.#.###.###.#.##
+....##.##.###..#####
+.#.#.###########.###
+#.#.#.#####.####.###
+###.##.####.##.#..##</textarea><br>
+        <button onclick="myFunction()">DoIt!</button>
+        <input type="text" id="res" readonly/><br>
+        <script>
+            function myFunction() {
+                var input = document.getElementById('input').value.split('\n');
+
+                var points = new Array();
+                input.forEach(function (rows, indexRow) {
+                    var row = rows.split('');
+                    row.forEach(function (element, indexColumn) {
+                        if (element === '#') {
+                            points.push({'x': indexColumn, 'y': indexRow});
+                        }
+                    });
+                });
+
+                var pointCopy = JSON.parse(JSON.stringify(points));
+                var max = 0;
+                var winner = '';
+
+                points.forEach(function (element, index) {
+                    var slopes = new Array();
+                    var allSlopes = new Object();
+                    points.forEach(function (element1, index1) {
+                        if (index !== index1) {
+                            var slope = Math.atan2((element1.x - element.x), (element1.y - element.y));
+                            if (allSlopes[slope] === undefined) {
+                                allSlopes[slope] = new Array();
+                            }
+                            allSlopes[slope].push(element1);
+                            if (slopes.indexOf(slope) === -1) {
+                                slopes.push(slope);
+                            }
+                        }
+                    });
+                    if (slopes.length > max) {
+                        max = slopes.length;
+                        winner = element;
+                        winner.slopes = allSlopes;
+                    }
+                });
+
+                //console.log(winner);
+                var deleted = new Array();
+                while (deleted.length < 200) {
+                    var x = 0;
+                    var y = 0;
+                    for (var i = 0; i < 360; i++) {
+                        var atan2 = Math.atan2(x, y);
+                        if (winner.slopes[atan2] !== undefined) {
+                            var toDelete = null;
+                            var min = null;
+                            var id = 0;
+                            winner.slopes[atan2].forEach(function (element, index) {
+                                var dist = Math.sqrt((element.x - winner.x) ^ 2 + (element.y - winner.y) ^ 2);
+                                if (min === null || min > dist) {
+                                    min = dist;
+                                    toDelete = element;
+                                    id = index;
+                                }
+                            });
+
+                            winner.slopes[atan2].splice(id, 1);
+
+                            deleted.push(toDelete);
+
+                        }
+
+
+                        if (i < 90) {
+                            x++;
+                            y++;
+                        } else if (i < 180) {
+                            x--;
+                            y++;
+                        } else if (i < 270) {
+                            x--;
+                            y--;
+                        } else {
+                            x++;
+                            y--;
+                        }
+                    }
+                }
+
+                console.log(deleted[200]);
+
+                //document.getElementById('res').value = 'winner: ' + winner + ' with ' + max;
+            }
+
+            function resizeTextArea() {
+                var rows = document.getElementById('input').value.split('\n');
+                document.getElementById('input').rows = rows.length;
+                document.getElementById('input').cols = rows[0].length + 1;
+            }
+
+        </script>
+    </body>
+</html>

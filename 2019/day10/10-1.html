@@ -1,66 +1,59 @@
 <html>
-	<head>
-		<style>
-			textarea {
-				font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
-			}
-		</style>
-	</head>
-    <body>
-        <textarea id="input">......#.#.
-#..#.#....
-..#######.
-.#.#.###..
-.#..#.....
-..#....#.#
-#..#....#.
-.##.#..###
-##...#..#.
-.#....####</textarea>
-
-        <button onclick="myFunction()">DoIt!</button><br>
-
+    <head>
+        <style>
+            textarea {
+                font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+            }
+        </style>
+    </head>
+    <body onload="resizeTextArea()">
+        <textarea onchange="resizeTextArea()" id="input">.#..#
+.....
+#####
+....#
+...##</textarea><br>
+        <button onclick="myFunction()">DoIt!</button>
+        <input type="text" id="res" readonly/><br>
         <script>
             function myFunction() {
-                program = new Object();
                 var input = document.getElementById('input').value.split('\n');
-                
-            	var points = new Array();
-            	input.forEach(function(rows,indexRow){
-            		var row = rows.split('');
-            		row.forEach(function(element,indexColumn){
-            			if (element === '#'){
-            				points.push({'x':indexColumn,'y':indexRow});
-            			}
-            		})
-            	});
-            	
-            	var viewFrom = new Object();
-            	
-            	for (var i=0; i<points.length; i++){
-            		viewFrom[points[i].x + ',' + points[i].y] = new Array();
-            		points.forEach(function(element){
-            			var angle = Math.atan((element.x-points[i].x)/(element.y-points[i].y)).toPrecision(5);
-            			viewFrom[points[i].x + ',' + points[i].y].push({'point':element,'ang':angle});
-            		})
-            	}
-            	
-            	console.log(viewFrom);
-            	var maxVieved = 0;
-            	
-            	for (var cord in viewFrom){
-            		var angles = new Array();
-            		var pointsVieved = new Array();
-            		viewFrom[cord].forEach(function(element){
-            			if (angles.indexOf(element.ang) === -1) {
-            				angles.push(element.ang);
-            				pointsVieved.push(element.point);
-            			}
-            		});
-            		console.log(angles);
-            		maxVieved = maxVieved > pointsVieved.length ? maxVieved : pointsVieved.length;
-            	}
-            	console.log(maxVieved);
+
+                var points = new Array();
+                input.forEach(function (rows, indexRow) {
+                    var row = rows.split('');
+                    row.forEach(function (element, indexColumn) {
+                        if (element === '#') {
+                            points.push({'x': indexColumn, 'y': indexRow});
+                        }
+                    });
+                });
+                var max = 0;
+                var winner = '';
+
+                points.forEach(function (element, index) {
+                    var slopes = new Array();
+                    points.forEach(function (element1, index1) {
+                        if (index !== index1) { 
+                            var slope = Math.atan2((element1.x-element.x) , (element1.y-element.y));
+                            if (slopes.indexOf(slope) === -1) {
+                                slopes.push(slope);
+                            }
+                        }
+                    });
+                    //console.log(element);
+                    //console.log(slopes);
+                    if (slopes.length > max) {
+                        max = slopes.length;
+                        winner = element.x + ',' + element.y;
+                    }
+                });
+                document.getElementById('res').value = 'winner: ' + winner + ' with ' + max;
+            }
+
+            function resizeTextArea() {
+                var rows = document.getElementById('input').value.split('\n');
+                document.getElementById('input').rows = rows.length + 1;
+                document.getElementById('input').cols = rows[0].length + 1;
             }
 
         </script>
