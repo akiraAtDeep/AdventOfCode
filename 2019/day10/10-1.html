@@ -1,0 +1,68 @@
+<html>
+	<head>
+		<style>
+			textarea {
+				font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+			}
+		</style>
+	</head>
+    <body>
+        <textarea id="input">......#.#.
+#..#.#....
+..#######.
+.#.#.###..
+.#..#.....
+..#....#.#
+#..#....#.
+.##.#..###
+##...#..#.
+.#....####</textarea>
+
+        <button onclick="myFunction()">DoIt!</button><br>
+
+        <script>
+            function myFunction() {
+                program = new Object();
+                var input = document.getElementById('input').value.split('\n');
+                
+            	var points = new Array();
+            	input.forEach(function(rows,indexRow){
+            		var row = rows.split('');
+            		row.forEach(function(element,indexColumn){
+            			if (element === '#'){
+            				points.push({'x':indexColumn,'y':indexRow});
+            			}
+            		})
+            	});
+            	
+            	var viewFrom = new Object();
+            	
+            	for (var i=0; i<points.length; i++){
+            		viewFrom[points[i].x + ',' + points[i].y] = new Array();
+            		points.forEach(function(element){
+            			var angle = Math.atan((element.x-points[i].x)/(element.y-points[i].y)).toPrecision(5);
+            			viewFrom[points[i].x + ',' + points[i].y].push({'point':element,'ang':angle});
+            		})
+            	}
+            	
+            	console.log(viewFrom);
+            	var maxVieved = 0;
+            	
+            	for (var cord in viewFrom){
+            		var angles = new Array();
+            		var pointsVieved = new Array();
+            		viewFrom[cord].forEach(function(element){
+            			if (angles.indexOf(element.ang) === -1) {
+            				angles.push(element.ang);
+            				pointsVieved.push(element.point);
+            			}
+            		});
+            		console.log(angles);
+            		maxVieved = maxVieved > pointsVieved.length ? maxVieved : pointsVieved.length;
+            	}
+            	console.log(maxVieved);
+            }
+
+        </script>
+    </body>
+</html>
