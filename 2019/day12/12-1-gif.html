@@ -1,0 +1,110 @@
+<html>
+    <body>
+        <textarea id="input"></textarea>
+        <button onclick="myFunction()">DoIt!</button><br>
+        <canvas id="myCanvas" width="250" height="250" style="border:1px solid #c3c3c3;">
+            Your browser does not support the canvas element.
+        </canvas>
+        <script type="text/javascript" src="lib/LZWEncoder.js"></script>
+        <script type="text/javascript" src="lib/NeuQuant.js"></script>
+        <script type="text/javascript" src="lib/GIFEncoder.js"></script>
+        <script>
+            var input = null;
+
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+
+            var stepX = c.width / 2;
+            var stepY = c.height / 2;
+            var minZ = 0;
+            var minX = 0;
+
+            function myFunction() {
+                input = document.getElementById('input').value.split('\n');
+                for (var i = 0; i < input.length; i++) {
+                    var tmpStar = new Object();
+                    input[i] = input[i].replace('<', '');
+                    input[i] = input[i].replace('>', '');
+                    input[i] = input[i].split(', ');
+                    for (var a = 0; a < input[i].length; a++) {
+                        input[i][a] = input[i][a].split('=');
+                        tmpStar[input[i][a][0]] = parseInt(input[i][a][1]);
+                    }
+                    tmpStar.velocityX = 0;
+                    tmpStar.velocityY = 0;
+                    tmpStar.velocityZ = 0;
+                    minZ = minZ < tmpStar.z ? minZ : tmpStar.z;
+                    minX = minX < tmpStar.x ? minX : tmpStar.x;
+                    input[i] = tmpStar;
+                }
+
+                minZ = Math.abs(minZ);
+                minX = Math.abs(minX);
+
+                animate();
+            }
+
+            function animate() {
+                var encoder = new GIFEncoder();
+                encoder.setRepeat(0);
+                encoder.setDelay(50);
+                encoder.start();
+                for (var i = 0; i < 1000; i++) {
+                    simulation();
+                    draw();
+                    encoder.addFrame(ctx);
+                }
+                encoder.finish();
+                encoder.download("download.gif");
+            }
+
+
+            function simulation() {
+                //update velocity by gravity
+                for (var i = 0; i < input.length; i++) {
+                    for (var a = 0; a < input.length; a++) {
+                        if (input[i].x !== input[a].x) {
+                            input[i].velocityX = input[i].x > input[a].x ? input[i].velocityX - 1 : input[i].velocityX + 1;
+                        }
+                        if (input[i].y !== input[a].y) {
+                            input[i].velocityY = input[i].y > input[a].y ? input[i].velocityY - 1 : input[i].velocityY + 1;
+                        }
+                        if (input[i].z !== input[a].z) {
+                            input[i].velocityZ = input[i].z > input[a].z ? input[i].velocityZ - 1 : input[i].velocityZ + 1;
+                        }
+                    }
+                }
+                //update position by velocity
+                for (var i = 0; i < input.length; i++) {
+                    input[i].x = input[i].x + input[i].velocityX;
+                    input[i].y = input[i].y + input[i].velocityY;
+                    input[i].z = input[i].z + input[i].velocityZ;
+                }
+                //previus.push(JSON.parse(JSON.stringify(input)));
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, c.width, c.height);
+                var color = ["#A93226", "#76448A", "#1F618D", "#148F77"];
+                
+                input.sort((a, b) => (a.x > b.x) ? 1 : -1);
+
+                for (var i = 0; i < input.length; i++) {
+                    ctx.beginPath();
+                    ctx.fillStyle = color[i];
+                    /*
+                     var z = (input[i].z + minZ) / 2;
+                     ctx.arc((input[i].x + stepX), (input[i].y + stepY), (z > 0 ? z : 1), 0, 2 * Math.PI);
+                     */
+                    var z = (input[i].x + minX) / 3;
+                    ctx.arc((input[i].y + stepX), (input[i].z + stepY), (z > 0 ? z : 1), 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+            }
+
+        </script>
+    </body>
+</html>

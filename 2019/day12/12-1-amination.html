@@ -1,0 +1,158 @@
+<html>
+    <body>
+        <textarea id="input"></textarea>
+        <button onclick="myFunction()">DoIt!</button><br>
+        <button onclick="startAnimating(20)">start</button><br>
+        <button onclick="stopAnimation()">Stop</button><br>
+        <canvas id="myCanvas" width="500" height="500" style="border:1px solid #c3c3c3;">
+            Your browser does not support the canvas element.
+        </canvas>
+
+        <script>
+            var input = null;
+            var animationId = null;
+
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+
+            var stepX = c.width / 2;
+            var stepY = c.height / 2;
+            var minZ = 0;
+            var minX = 0;
+
+            var previus = new Array();
+
+            var frameCount = 0;
+            var fps, fpsInterval, startTime, now, then, elapsed;
+
+            function myFunction() {
+                input = document.getElementById('input').value.split('\n');
+                for (var i = 0; i < input.length; i++) {
+                    var tmpStar = new Object();
+                    input[i] = input[i].replace('<', '');
+                    input[i] = input[i].replace('>', '');
+                    input[i] = input[i].split(', ');
+                    for (var a = 0; a < input[i].length; a++) {
+                        input[i][a] = input[i][a].split('=');
+                        tmpStar[input[i][a][0]] = parseInt(input[i][a][1]);
+                    }
+                    tmpStar.velocityX = 0;
+                    tmpStar.velocityY = 0;
+                    tmpStar.velocityZ = 0;
+                    minZ = minZ < tmpStar.z ? minZ : tmpStar.z;
+                    minX = minX < tmpStar.x ? minX : tmpStar.x;
+                    input[i] = tmpStar;
+                }
+
+                minZ = Math.abs(minZ);
+                minX = Math.abs(minX);
+
+                startAnimating(20);
+            }
+
+            function startAnimating(fps) {
+                fpsInterval = 1000 / fps;
+                then = Date.now();
+                startTime = then;
+                animate();
+            }
+
+            function stopAnimation() {
+                window.cancelAnimationFrame(animationId);
+                console.log(previus);
+            }
+
+            function animate() {
+                // request another frame
+                animationId = requestAnimationFrame(animate);
+                // calc elapsed time since last loop
+                now = Date.now();
+                elapsed = now - then;
+
+                // if enough time has elapsed, draw the next frame
+                if (elapsed > fpsInterval) {
+                    // Get ready for next frame by setting then=now, but also adjust for your
+                    // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+                    then = now - (elapsed % fpsInterval);
+                    // Put your drawing code here
+
+                    simulation();
+                    draw();
+                    frameCount++;
+                    if (frameCount === 1000) {
+                        stopAnimation();
+                    }
+                }
+            }
+
+            function simulation() {
+                //update velocity by gravity
+                for (var i = 0; i < input.length; i++) {
+                    for (var a = 0; a < input.length; a++) {
+                        if (input[i].x !== input[a].x) {
+                            input[i].velocityX = input[i].x > input[a].x ? input[i].velocityX - 1 : input[i].velocityX + 1;
+                        }
+                        if (input[i].y !== input[a].y) {
+                            input[i].velocityY = input[i].y > input[a].y ? input[i].velocityY - 1 : input[i].velocityY + 1;
+                        }
+                        if (input[i].z !== input[a].z) {
+                            input[i].velocityZ = input[i].z > input[a].z ? input[i].velocityZ - 1 : input[i].velocityZ + 1;
+                        }
+                    }
+                }
+                //update position by velocity
+                for (var i = 0; i < input.length; i++) {
+                    input[i].x = input[i].x + input[i].velocityX;
+                    input[i].y = input[i].y + input[i].velocityY;
+                    input[i].z = input[i].z + input[i].velocityZ;
+                }
+                //previus.push(JSON.parse(JSON.stringify(input)));
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, c.width, c.height);
+                var color = ["#A93226", "#76448A", "#1F618D", "#148F77"];
+                input.sort((a, b) => (a.x > b.x) ? 1 : -1);
+                /*
+                 previus.forEach(function (element) {
+                 for (var i = 0; i < element.length; i++) {
+                 console.log('a');
+                 var nextX = 0;
+                 var nextY = 0;
+                 if (i + 1 < element.length) {
+                 nextX = input[i + 1].z + stepX;
+                 nextY = input[i + 1].y + stepY;
+                 } else {
+                 nextX = input[i].z + stepX;
+                 nextY = input[i].y + stepY;
+                 }
+                 ctx.strokeStyle = color[i];
+                 //ctx.fillRect((input[i].x + stepX), (input[i].y + stepY), 1, 1);
+                 //ctx.fillRect((input[i].y + stepY), (input[i].z + stepY), 1, 1);
+                 ctx.beginPath();
+                 ctx.moveTo((input[i].z + stepX), (input[i].y + stepY));
+                 ctx.lineTo(nextX, nextY);
+                 ctx.stroke();
+                 }
+                 });
+                 */
+
+                for (var i = 0; i < input.length; i++) {
+                    ctx.beginPath();
+                    ctx.fillStyle = color[i];
+                    /*
+                     var z = (input[i].z + minZ) / 2;
+                     ctx.arc((input[i].x + stepX), (input[i].y + stepY), (z > 0 ? z : 1), 0, 2 * Math.PI);
+                     */
+                    var z = (input[i].x + minX) / 3;
+                    ctx.arc((input[i].y + stepX), (input[i].z + stepY), (z > 0 ? z : 1), 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+            }
+
+        </script>
+    </body>
+</html>
