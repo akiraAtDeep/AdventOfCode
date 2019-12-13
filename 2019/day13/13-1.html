@@ -1,0 +1,180 @@
+<html>
+    <body>
+        program:
+        <textarea id="program"></textarea>
+        <button onclick="myFunction()">DoIt!</button>input:
+        <input type="number" id="input"/><br>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            var program = null;
+            var relativeBase = null;
+            var render = null;
+            var points = null;
+            var input = null;
+            function myFunction() {
+                render = new Array();
+                points = new Array();
+                program = document.getElementById('program').value.split(',');
+                relativeBase = 0;
+                for (var i = 0; i < Object.keys(program).length; ) {
+
+                    var tmp = program[i].toString();
+                    var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
+                    var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
+                    var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
+                    var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
+                    i = stuff(operation, mode1, mode2, mode3, i);
+
+                }
+
+                var count = 0;
+                var maxX = 0;
+                var maxY = 0;
+                points.forEach(function (element) {
+                    if (element.type === 2) {
+                        count++;
+                    }
+                    maxX = maxX > element.x ? maxX : element.x;
+                    maxY = maxY > element.y ? maxY : element.y;
+                });
+
+                var field = new Array();
+                for (var y = 0; y < maxY+1; y++) {
+                    var row = new Array();
+                    for (var x = 0; x < maxX+1; x++) {
+                        row.push(0);
+                    }
+                    field.push(row);
+                }
+
+                points.forEach(function (element) {
+                    if (field[element.y] !== undefined){
+                        field[element.y][element.x] = element.type;
+                    }
+                });
+
+                var str = '';
+                field.forEach(function (element) {
+                    var tmp = '';
+                    element.forEach(function (element1) {
+                        switch (element1) {
+                            case 0:
+                                tmp = tmp + ' '
+                                break;
+                            case 1:
+                                tmp = tmp + '#'
+                                break;
+                            case 2:
+                                tmp = tmp + 'X'
+                                break;
+                            case 3:
+                                tmp = tmp + '='
+                                break;
+                            case 4:
+                                tmp = tmp + 'O'
+                                break;
+                        }
+                    });
+                    str = str + '\n' + tmp;
+                    //console.log(str);
+                });
+
+                console.log(str);
+
+
+                document.getElementById('res').value = count;
+            }
+
+            function stuff(operation, mode1, mode2, mode3, i) {
+                if (operation === 1) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    program[pos3] = parseInt(program[pos1]) + parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 2) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    program[pos3] = parseInt(program[pos1]) * parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 3) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    program[pos1] = input;
+                    i = i + 2;
+                } else if (operation === 4) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    render.push(parseInt(program[pos1]));
+                    if (render.length === 3) {
+                        points.push({'x': render[0], 'y': render[1], 'type': render[2]});
+                        render = new Array;
+                    }
+                    i = i + 2;
+                } else if (operation === 5) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    if (parseInt(program[pos1]) > 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 6) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    if (parseInt(program[pos1]) === 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 7) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    if (parseInt(program[pos1]) < parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 8) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    if (parseInt(program[pos1]) === parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 9) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    relativeBase = relativeBase + parseInt(program[pos1]);
+                    i = i + 2;
+                } else if (operation === 99) {
+                    i = program.length;
+                }
+
+                return(i);
+            }
+
+            function getPosition(mode, nParameter, i) {
+                var parameter = 0;
+                switch (mode) {
+                    case 0:
+                        parameter = parseInt(program[i + nParameter]);
+                        break;
+                    case 1:
+                        parameter = i + nParameter;
+                        break;
+                    case 2:
+                        parameter = relativeBase + parseInt(program[i + nParameter]);
+                        break;
+                }
+                return(parameter);
+            }
+
+        </script>
+    </body>
+</html>
