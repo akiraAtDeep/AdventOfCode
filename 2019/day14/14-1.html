@@ -1,0 +1,126 @@
+<html>
+    <body>
+        input:
+        <textarea id="input">10 ORE => 10 A
+1 ORE => 1 B
+7 A, 1 B => 1 C
+7 A, 1 C => 1 D
+7 A, 1 D => 1 E
+7 A, 1 E => 1 FUEL</textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+        	var reactions;
+        	var rest;
+        	var nORE;
+            function myFunction() {
+                var input = document.getElementById('input').value.split('\n');
+                
+                reactions = new Array();
+                rest = new Object();
+                nORE = 0;
+                
+                input.forEach(function(element){
+                	var chemicals = element.split(' => ');
+                	
+                	var res = chemicals[1].split(' ');
+                	
+                	var requirement = chemicals[0].split(',');
+                	for(var i=0; i<requirement.length; i++){
+                		var tmp = requirement[i].split(' ');
+                		var req = new Object();
+                		if (tmp[0] === '') {
+                			req.element = tmp[2];
+                			req.quantity = parseInt(tmp[1]);
+                		} else {
+                			req.element = tmp[1];
+                			req.quantity = parseInt(tmp[0]);
+                		}
+                		requirement[i] = req;
+                	}
+                	
+                	reactions.push({'res':{'quantity': parseInt(res[0]), 'element': res[1]}, 'req': requirement});
+                	
+                	rest[res[1]] = 0;
+                });
+                
+                console.log(reactions);
+                
+                findRequirement('FUEL',1);
+                
+                console.log(nORE);
+
+                //document.getElementById('res').value = count;
+            }
+            
+            
+            function findRequirement(element,quantity){
+            	var req = null;
+            	var min;
+            	for (var i=0; i<reactions.length; i++){
+            		if (reactions[i].res.element === element){
+            			req = reactions[i].req;
+            			min = reactions[i].res.quantity;
+            			i=reactions.length;
+            		}
+            	}
+       			console.log('richiesti per ' + element);
+            	if (req !== null){
+            		req.forEach(function(asd){
+            		
+            		var requestedQuantity = asd.quantity * quantity;
+            		
+            		if (asd.element === 'ORE') {
+            			console.log(asd);
+            			nORE = nORE + requestedQuantity;
+            		} else {
+            		
+            			var reactQuantity = 0;
+            			for (var i=0; i<reactions.length; i++){
+            				if (reactions[i].res.element === asd.element){
+            					reactQuantity = reactions[i].res.quantity;
+            					i=reactions.length;
+            				}
+            			}
+            			console.log('elemento: ' + asd.element + ' quantita\' minima: ' + reactQuantity + ' ne servono: ' + asd.quantity + ' no ho gia: ' + rest[asd.element]);
+            			
+            			if (rest[asd.element] > requestedQuantity) {
+            				rest[asd.element] = rest[asd.element] - requestedQuantity;
+            				console.log('a');
+            			} else {
+            				if (requestedQuantity < reactQuantity) {
+            					//la quantita' richiesta e' inferiore a quella prodotta da una reazione
+            					rest[asd.element] = rest[asd.element] + (reactQuantity - requestedQuantity);
+            					
+            				console.log('b');
+            					findRequirement(asd.element,reactQuantity);
+            				} else {
+            					//la quantita' richiesta e' maggiore di quella prodotta da una reazione
+            					var times = 0;
+            					for (i=1; i<100; i++) {
+            						if (reactQuantity * i > requestedQuantity) {
+            							times = i;
+            							i=100;
+            						}
+            					}
+            					console.log(times);
+            					rest[asd.element] = rest[asd.element] + (reactQuantity*times)-requestedQuantity;
+            					console.log('c');
+            					console.log(times + ' * ' + reactQuantity + ' = ' + (reactQuantity*times));
+            					findRequirement(asd.element, reactQuantity*times);
+            				}
+            			}
+
+          	 	 	}
+          	 	 	});
+          	 	 	
+            	}
+            	console.log('-----------------');
+            	
+            }
+
+        </script>
+    </body>
+</html>
