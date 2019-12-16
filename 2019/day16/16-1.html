@@ -1,0 +1,39 @@
+<html>
+    <body>
+        input:
+        <textarea id="input">12345678</textarea>
+        <button onclick="myFunction()">DoIt!</button><br>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            function myFunction() {
+                var input = document.getElementById('input').value.split('');
+                var pattern = [0, 1, 0, -1];
+                for (var i = 0; i < 100; i++) {
+                    var newPhase = new Array();
+                    for (var times = 1; times <= input.length; times++) {
+                        var sum = 0;
+                        var actualPattern = new Array;
+                        var patternIndex = 1;
+                        pattern.forEach(function (element) {
+                            for (var a = 0; a < times; a++) {
+                                actualPattern.push(element);
+                            }
+                        });
+                        input.forEach(function (element) {
+                            sum = sum + (parseInt(element) * actualPattern[patternIndex]);
+                            patternIndex = patternIndex + 1 === actualPattern.length ? 0 : patternIndex + 1;
+                        });
+                        var tmp = sum.toString().split('');
+                        newPhase.push(tmp[tmp.length-1]);
+                    }
+                    input = newPhase;
+                    //console.log(newPhase.join());
+                }
+                var res = input.slice(0, 8);
+                document.getElementById('res').value = res.join('');
+            }
+        </script>
+    </body>
+</html>

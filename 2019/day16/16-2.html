@@ -1,0 +1,50 @@
+<html>
+    <body>
+        input:
+        <textarea id="input">03036732577212944063491565474664</textarea>
+        <button onclick="myFunction()">DoIt!</button><br>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            function myFunction() {
+                var input = document.getElementById('input').value;
+                
+                var tmp = "";
+                for (var i = 0; i<10000; i++){
+                    tmp = tmp + input;
+                }
+                var phase= tmp.split('');
+                
+                var tmp = phase.slice(0, 7);
+                var offset = parseInt(tmp.join(''));
+                
+                var pattern = [0, 1, 0, -1];
+                
+                for (var i = 0; i < 100; i++) {
+                    var newPhase = new Array();
+                    for (var times = 1; times <= phase.length; times++) {
+                        var sum = 0;
+                        var actualPattern = new Array;
+                        var patternIndex = 1;
+                        pattern.forEach(function (element) {
+                            for (var a = 0; a < times; a++) {
+                                actualPattern.push(element);
+                            }
+                        });
+                        phase.forEach(function (element) {
+                            sum = sum + (parseInt(element) * actualPattern[patternIndex]);
+                            patternIndex = patternIndex + 1 === actualPattern.length ? 0 : patternIndex + 1;
+                        });
+                        var tmp = sum.toString().split('');
+                        newPhase.push(tmp[tmp.length-1]);
+                    }
+                    phase = newPhase;
+                    //console.log(newPhase.join());
+                }
+                var res = phase.slice(offset, 8);
+                document.getElementById('res').value = res.join('');
+            }
+        </script>
+    </body>
+</html>
