@@ -55,6 +55,7 @@
                             var slope = Math.atan2((element1.x - element.x), (element1.y - element.y));
                             if (allSlopes[slope] === undefined) {
                                 allSlopes[slope] = new Array();
+                                allSlopes[slope].slope = slope;
                             }
                             allSlopes[slope].push(element1);
                             if (slopes.indexOf(slope) === -1) {
@@ -69,52 +70,30 @@
                     }
                 });
 
-                //console.log(winner);
-                var deleted = new Array();
-                while (deleted.length < 200) {
-                    var x = 0;
-                    var y = 0;
-                    for (var i = 0; i < 360; i++) {
-                        var atan2 = Math.atan2(x, y);
-                        if (winner.slopes[atan2] !== undefined) {
-                            var toDelete = null;
-                            var min = null;
-                            var id = 0;
-                            winner.slopes[atan2].forEach(function (element, index) {
-                                var dist = Math.sqrt((element.x - winner.x) ^ 2 + (element.y - winner.y) ^ 2);
-                                if (min === null || min > dist) {
-                                    min = dist;
-                                    toDelete = element;
-                                    id = index;
-                                }
-                            });
-
-                            winner.slopes[atan2].splice(id, 1);
-
-                            deleted.push(toDelete);
-
-                        }
-
-
-                        if (i < 90) {
-                            x++;
-                            y++;
-                        } else if (i < 180) {
-                            x--;
-                            y++;
-                        } else if (i < 270) {
-                            x--;
-                            y--;
-                        } else {
-                            x++;
-                            y--;
-                        }
+                var slopes = new Array();
+                for (var i in winner.slopes) {
+                    slopes.push(i);
+                    //devo ordinare per distanza i vari punti
+                    for (var a = 0; a < winner.slopes[i].length; a++) {
+                        winner.slopes[i][a].dist = Math.sqrt(Math.pow(Math.abs(winner.x - winner.slopes[i][a].x), 2) + Math.pow(Math.abs(winner.y - winner.slopes[i][a].y), 2));
                     }
+                    winner.slopes[i].sort((a, b) => (a.dist > b.dist) ? 1 : -1);
                 }
+                
+                
+                
+                slopes.sort((a, b) => parseFloat(a) > parseFloat(b) ? 1 : -1);
+                
+                var deleted = new Array();
+                slopes.forEach(function(element){
+                    if (winner.slopes[element].length > 0) {
+                        deleted.push(winner.slopes[element][0]);
+                        winner.slopes[element].splice(0,1);
+                    }
+                });
+                
+                console.log(deleted);
 
-                console.log(deleted[200]);
-
-                //document.getElementById('res').value = 'winner: ' + winner + ' with ' + max;
             }
 
             function resizeTextArea() {

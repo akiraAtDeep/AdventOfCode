@@ -1,37 +1,33 @@
 <html>
     <body>
         program:
-        <textarea id="program">109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99</textarea>
-        input:
-        <input type="number" id="input"/>
+        <textarea id="program">3,70,9,70,2001,71,74,73,2001,72,78,74,1002,70,-1,70,9,70,2,73,100,83,1,83,74,83,9,83,1201,116,0,84,1002,83,-1,83,9,83,1006,84,49,1001,73,0,71,1001,74,0,72,4,84,1105,1,0,99,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,1,0,0,0,0,-1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,-1,0,0,-1,-1,-1,0,1,1,0,0,-1,0,1,0,1,1,0,0,1,2,1,0,-1,-1,0,0,0,-1,-1</textarea>
         <button onclick="myFunction()">DoIt!</button><br>
         result:
-        <textarea id="res" readonly></textarea>
+        <input id="res" readonly/>
 
         <script>
-            var program = null;
-            var input = null;
-            var out = null;
-            var relativeBase = null;
+            var program;
+            var relativeBase;
+            var direction;
+            var lastDirection;
+            var step;
+
             function myFunction() {
+                direction = 1;
+                lastDirection = 1;
+                step = new Array();
+
                 program = document.getElementById('program').value.split(',');
-                input = document.getElementById('input').value;
-                out = '';
-                document.getElementById('res').value = out;
                 relativeBase = 0;
                 for (var i = 0; i < Object.keys(program).length; ) {
-                    
                     var tmp = program[i].toString();
                     var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
                     var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
                     var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
                     var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
                     i = stuff(operation, mode1, mode2, mode3, i);
-
                 }
-                //console.log(program.join());
-                console.log('end');
-
             }
 
             function stuff(operation, mode1, mode2, mode3, i) {
@@ -49,12 +45,27 @@
                     i = i + 4;
                 } else if (operation === 3) {
                     var pos1 = getPosition(mode1, 1, i);
-                    program[pos1] = input;
+                    program[pos1] = direction;
                     i = i + 2;
                 } else if (operation === 4) {
                     var pos1 = getPosition(mode1, 1, i);
-                    out = out + program[pos1] + ';';
-                    document.getElementById('res').value = out;
+                    switch (program[pos1]) {
+                        case 0:
+                            //muro
+                            console.log('muro');
+                            direction = direction + 1 === 4 ? 1 : direction + 1;
+                            break;
+                        case 1:
+                            //libero
+                            direction = direction + 1 === 4 ? 1 : direction + 1;
+                            console.log('libero');
+                            step.push(direction);
+                            break;
+                        case 2:
+                            //arrivato!
+                            console.log('arrivato!');
+                            break;
+                    }
                     i = i + 2;
                 } else if (operation === 5) {
                     var pos1 = getPosition(mode1, 1, i);
@@ -99,7 +110,6 @@
                 } else if (operation === 99) {
                     i = program.length;
                 }
-
                 return(i);
             }
 

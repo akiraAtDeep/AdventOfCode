@@ -12,114 +12,97 @@
         <input id="res" readonly/>
 
         <script>
-        	var reactions;
-        	var rest;
-        	var nORE;
+            var reactions;
+            var rest;
+            var nORE;
             function myFunction() {
                 var input = document.getElementById('input').value.split('\n');
-                
+
                 reactions = new Array();
                 rest = new Object();
                 nORE = 0;
-                
-                input.forEach(function(element){
-                	var chemicals = element.split(' => ');
-                	
-                	var res = chemicals[1].split(' ');
-                	
-                	var requirement = chemicals[0].split(',');
-                	for(var i=0; i<requirement.length; i++){
-                		var tmp = requirement[i].split(' ');
-                		var req = new Object();
-                		if (tmp[0] === '') {
-                			req.element = tmp[2];
-                			req.quantity = parseInt(tmp[1]);
-                		} else {
-                			req.element = tmp[1];
-                			req.quantity = parseInt(tmp[0]);
-                		}
-                		requirement[i] = req;
-                	}
-                	
-                	reactions.push({'res':{'quantity': parseInt(res[0]), 'element': res[1]}, 'req': requirement});
-                	
-                	rest[res[1]] = 0;
+
+                input.forEach(function (element) {
+                    var chemicals = element.split(' => ');
+
+                    var res = chemicals[1].split(' ');
+
+                    var requirement = chemicals[0].split(',');
+                    for (var i = 0; i < requirement.length; i++) {
+                        var tmp = requirement[i].split(' ');
+                        var req = new Object();
+                        if (tmp[0] === '') {
+                            req.element = tmp[2];
+                            req.quantity = parseInt(tmp[1]);
+                        } else {
+                            req.element = tmp[1];
+                            req.quantity = parseInt(tmp[0]);
+                        }
+                        requirement[i] = req;
+                    }
+
+                    reactions.push({'res': {'quantity': parseInt(res[0]), 'element': res[1]}, 'req': requirement});
+
+                    rest[res[1]] = 0;
                 });
-                
+
                 console.log(reactions);
-                
-                findRequirement('FUEL',1);
-                
-                console.log(nORE);
+                console.log(rest);
 
-                //document.getElementById('res').value = count;
-            }
-            
-            
-            function findRequirement(element,quantity){
-            	var req = null;
-            	var min;
-            	for (var i=0; i<reactions.length; i++){
-            		if (reactions[i].res.element === element){
-            			req = reactions[i].req;
-            			min = reactions[i].res.quantity;
-            			i=reactions.length;
-            		}
-            	}
-       			console.log('richiesti per ' + element);
-            	if (req !== null){
-            		req.forEach(function(asd){
-            		
-            		var requestedQuantity = asd.quantity * quantity;
-            		
-            		if (asd.element === 'ORE') {
-            			console.log(asd);
-            			nORE = nORE + requestedQuantity;
-            		} else {
-            		
-            			var reactQuantity = 0;
-            			for (var i=0; i<reactions.length; i++){
-            				if (reactions[i].res.element === asd.element){
-            					reactQuantity = reactions[i].res.quantity;
-            					i=reactions.length;
-            				}
-            			}
-            			console.log('elemento: ' + asd.element + ' quantita\' minima: ' + reactQuantity + ' ne servono: ' + asd.quantity + ' no ho gia: ' + rest[asd.element]);
-            			
-            			if (rest[asd.element] > requestedQuantity) {
-            				rest[asd.element] = rest[asd.element] - requestedQuantity;
-            				console.log('a');
-            			} else {
-            				if (requestedQuantity < reactQuantity) {
-            					//la quantita' richiesta e' inferiore a quella prodotta da una reazione
-            					rest[asd.element] = rest[asd.element] + (reactQuantity - requestedQuantity);
-            					
-            				console.log('b');
-            					findRequirement(asd.element,reactQuantity);
-            				} else {
-            					//la quantita' richiesta e' maggiore di quella prodotta da una reazione
-            					var times = 0;
-            					for (i=1; i<100; i++) {
-            						if (reactQuantity * i > requestedQuantity) {
-            							times = i;
-            							i=100;
-            						}
-            					}
-            					console.log(times);
-            					rest[asd.element] = rest[asd.element] + (reactQuantity*times)-requestedQuantity;
-            					console.log('c');
-            					console.log(times + ' * ' + reactQuantity + ' = ' + (reactQuantity*times));
-            					findRequirement(asd.element, reactQuantity*times);
-            				}
-            			}
+                produceElement('FUEL', 1, 0);
 
-          	 	 	}
-          	 	 	});
-          	 	 	
-            	}
-            	console.log('-----------------');
-            	
+                console.log('la quantità del elemento ORE da produrre è ' + nORE);
+
+                document.getElementById('res').value = nORE;
             }
+
+            function produceElement(element, quantity, tree) {
+                var requirement;
+                var min;
+                for (var asd in reactions) {
+                    if (reactions[asd].res.element === element) {
+                        min = reactions[asd].res.quantity;
+                        requirement = reactions[asd].req;
+                    }
+                }
+                if (requirement !== undefined) {
+                    if (rest[element] < quantity) { //la quantità richiesta è superiore a quella che ho accumulato per via del surplus delle altre reazioni, quindi devo produrne
+                        var toProduce = quantity - rest[element];
+                        if (toProduce < min) { //la quantità da produrre è inferiore a quella ottenuta da una singola reazione
+                            toProduce = min;
+                            console.log('devo produrre ' + toProduce + ' ' + element + ' anzi che la richiesta di ' + (quantity - rest[element]) + ' dato un minimo di ' + min + ' figlio di ' + tree);
+                            rest[element] = rest[element] + toProduce - quantity;
+                            console.log('ne avanzano ' + rest[element]);
+                        } else if (toProduce === min) {
+                            console.log('produco ' + toProduce + ' ' + element + ' perché è la quantità ottenuta da una reazione' + ' figlio di ' + tree);
+                        } else {
+                            var moltiplicatore = 1;
+                            while (min * moltiplicatore < toProduce) {
+                                moltiplicatore++;
+                            }
+                            toProduce = min * moltiplicatore;
+                            console.log('devo produrre ' + toProduce + ' ' + element + ' anzi che ' + (quantity - rest[element]) + ' perché è un multiplo di ' + min + ' figlio di ' + tree);
+                            rest[element] = rest[element] + (min * moltiplicatore - (quantity - rest[element]));
+                            console.log('ne avanzano ' + rest[element]);
+                        }
+                        requirement.forEach(function (req) {
+                            produceElement(req.element, req.quantity * (toProduce / min), tree+1);
+                        });
+                    } else {
+                        console.log('non serve produrre ' + element + ' perché la richiesta è di ' + quantity - rest[element] + ' ma ne ho già ' + rest[element] + ' figlio di ' + tree);
+                        rest[element] = rest[element] - quantity;
+                        console.log('ne avanzano ' + rest[element]);
+                    }
+                } else {
+                    //arrivati al dunque
+                    
+                    console.log('--------------- ' + element + ' --- ' + quantity + ' ----------------');
+                    
+                    console.log('---ho consumato ' + quantity + ' ORE');
+                    nORE = nORE + quantity;
+                }
+            }
+
 
         </script>
     </body>
