@@ -1,0 +1,139 @@
+<html>
+    <body>
+        program:
+        <textarea id="program"></textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            var program;
+            var relativeBase;
+            var str;
+            var field;
+            function myFunction() {
+                str = '';
+                field = new Array(new Array());
+                program = document.getElementById('program').value.split(',');
+                relativeBase = 0;
+                for (var i = 0; i < Object.keys(program).length; ) {
+
+                    var tmp = program[i].toString();
+                    var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
+                    var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
+                    var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
+                    var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
+                    i = stuff(operation, mode1, mode2, mode3, i);
+
+                }
+
+                console.log(str);
+                var alignment = 0;
+
+                for (var y = 1; y < field.length - 1; y++) {
+                    for (var x = 1; x < field[y].length - 1; x++) {
+                        if (field[y][x] === '#') {
+                            if (field[y - 1][x] === '#' && field[y + 1][x] === '#' &&
+                                    field[y][x - 1] === '#' && field[y][x + 1] === '#') {
+                                alignment = alignment + (x * y);
+                            }
+                        }
+                    }
+                }
+
+                document.getElementById('res').value = alignment;
+
+            }
+
+            function stuff(operation, mode1, mode2, mode3, i) {
+                if (operation === 1) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    program[pos3] = parseInt(program[pos1]) + parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 2) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    program[pos3] = parseInt(program[pos1]) * parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 3) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    //program[pos1] = input;
+                    i = i + 2;
+                } else if (operation === 4) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    str = str + String.fromCharCode(parseInt(program[pos1]));
+                    if (parseInt(program[pos1]) === 10) {
+                        field.push(new Array());
+                    } else {
+                        field[field.length - 1].push(String.fromCharCode(parseInt(program[pos1])));
+                    }
+                    i = i + 2;
+                } else if (operation === 5) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    if (parseInt(program[pos1]) > 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 6) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    if (parseInt(program[pos1]) === 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 7) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    if (parseInt(program[pos1]) < parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 8) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    if (parseInt(program[pos1]) === parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 9) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    relativeBase = relativeBase + parseInt(program[pos1]);
+                    i = i + 2;
+                } else if (operation === 99) {
+                    i = program.length;
+                }
+
+                return(i);
+            }
+
+            function getPosition(mode, nParameter, i) {
+                var parameter = 0;
+                switch (mode) {
+                    case 0:
+                        parameter = parseInt(program[i + nParameter]);
+                        break;
+                    case 1:
+                        parameter = i + nParameter;
+                        break;
+                    case 2:
+                        parameter = relativeBase + parseInt(program[i + nParameter]);
+                        break;
+                }
+                return(parameter);
+            }
+
+        </script>
+    </body>
+</html>

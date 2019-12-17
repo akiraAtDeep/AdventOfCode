@@ -1,0 +1,283 @@
+<html>
+    <body>
+        program:
+        <textarea id="program"></textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            var program;
+            var relativeBase;
+            var str;
+            var field;
+            var position;
+            var forward;
+            var end;
+            var steps;
+            function myFunction() {
+                str = '';
+                field = new Array(new Array());
+                forward = 0;
+                end = false;
+                position = new Object();
+                steps = new Array();
+
+                program = document.getElementById('program').value.split(',');
+                //faccio girare il porgramma per avere il traccaito delle rotaie
+                runIntcode();
+                console.log(str);
+                //traccio il percorso
+                while (!end) {
+                    nextPosition();
+                }
+                console.log(steps.join());
+                //trovo come dividere le istruzioni in bloccchi
+
+                var allKey = new Array();
+
+                for (var length = 2; length < 20; length++) {
+                    for (var i = 0; i < steps.length - length; i++) {
+                        var tmp = new Array();
+                        for (var a = 0; a < length; a++) {
+                            tmp.push(steps[i + a]);
+                        }
+                        if (tmp.join().length <= 20) {
+                            allKey.push(tmp);
+                        }
+                    }
+                }
+
+                var uniqueKey = new Array();
+
+                allKey.forEach(function (element) {
+                    if (uniqueKey.indexOf(element.join()) === -1) {
+                        uniqueKey.push(element.join());
+                    }
+                });
+
+                //facci girare nuovamente il programma, ma stavolta muovendo il robot con le istruzioni che ho creato
+
+                console.log('end');
+                //document.getElementById('res').value = alignment;
+            }
+
+            function runIntcode() {
+                relativeBase = 0;
+                for (var i = 0; i < Object.keys(program).length; ) {
+
+                    var tmp = program[i].toString();
+                    var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
+                    var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
+                    var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
+                    var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
+                    i = stuff(operation, mode1, mode2, mode3, i);
+
+                }
+            }
+
+            function stuff(operation, mode1, mode2, mode3, i) {
+                if (operation === 1) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    program[pos3] = parseInt(program[pos1]) + parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 2) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    program[pos3] = parseInt(program[pos1]) * parseInt(program[pos2]);
+                    i = i + 4;
+                } else if (operation === 3) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    //program[pos1] = input;
+                    i = i + 2;
+                } else if (operation === 4) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var tmp = String.fromCharCode(parseInt(program[pos1]));
+                    str = str + tmp;
+                    if (parseInt(program[pos1]) === 10) {
+                        field.push(new Array());
+                    } else {
+                        if (tmp === '^' || tmp === 'v' || tmp === '<' || tmp === '>') {
+                            position.y = field.length - 1;
+                            position.x = field[field.length - 1].length;
+                            position.direction = tmp;
+                        }
+                        field[field.length - 1].push(tmp);
+                    }
+                    i = i + 2;
+                } else if (operation === 5) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    if (parseInt(program[pos1]) > 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 6) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    if (parseInt(program[pos1]) === 0) {
+                        i = parseInt(program[pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 7) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    if (parseInt(program[pos1]) < parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 8) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    var pos2 = getPosition(mode2, 2, i);
+                    var pos3 = getPosition(mode3, 3, i);
+                    if (parseInt(program[pos1]) === parseInt(program[pos2])) {
+                        program[pos3] = 1;
+                    } else {
+                        program[pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 9) {
+                    var pos1 = getPosition(mode1, 1, i);
+                    relativeBase = relativeBase + parseInt(program[pos1]);
+                    i = i + 2;
+                } else if (operation === 99) {
+                    i = program.length;
+                }
+
+                return(i);
+            }
+
+            function getPosition(mode, nParameter, i) {
+                var parameter = 0;
+                switch (mode) {
+                    case 0:
+                        parameter = parseInt(program[i + nParameter]);
+                        break;
+                    case 1:
+                        parameter = i + nParameter;
+                        break;
+                    case 2:
+                        parameter = relativeBase + parseInt(program[i + nParameter]);
+                        break;
+                }
+                return(parameter);
+            }
+
+            function nextPosition() {
+                switch (position.direction) {
+                    case '^':
+                        if (position.y - 1 > -1) {
+                            if (field[position.y - 1][position.x] === '#') {
+                                position.y--;
+                                forward++;
+                            } else {
+                                newDirection();
+                            }
+                        } else {
+                            newDirection();
+                        }
+                        break;
+                    case 'v':
+                        if (position.y + 1 < field.length) {
+                            if (field[position.y + 1][position.x] === '#') {
+                                position.y++;
+                                forward++;
+                            } else {
+                                newDirection();
+                            }
+                        } else {
+                            newDirection();
+                        }
+                        break;
+                    case '<':
+                        if (position.x - 1 > -1) {
+                            if (field[position.y][position.x - 1] === '#') {
+                                position.x--;
+                                forward++;
+                            } else {
+                                newDirection();
+                            }
+                        } else {
+                            newDirection();
+                        }
+                        break;
+                    case '>':
+                        if (position.x + 1 < field[position.y].length) {
+                            if (field[position.y][position.x + 1] === '#') {
+                                position.x++;
+                                forward++;
+                            } else {
+                                newDirection();
+                            }
+                        } else {
+                            newDirection();
+                        }
+                        break;
+                }
+            }
+
+            function newDirection() {
+                if (forward > 0) {
+                    steps.push(forward);
+                    forward = 0;
+                }
+                switch (position.direction) {
+                    case '^':
+                        if (field[position.y][position.x + 1] === '#') {
+                            position.direction = '>';
+                            steps.push('R');
+                        } else if (field[position.y][position.x - 1] === '#') {
+                            position.direction = '<';
+                            steps.push('L');
+                        } else {
+                            end = true;
+                        }
+                        break;
+                    case 'v':
+                        if (field[position.y][position.x + 1] === '#') {
+                            position.direction = '>';
+                            steps.push('L');
+                        } else if (field[position.y][position.x - 1] === '#') {
+                            position.direction = '<';
+                            steps.push('R');
+                        } else {
+                            end = true;
+                        }
+                        break;
+                    case '<':
+                        if (field[position.y + 1][position.x] === '#') {
+                            position.direction = 'v';
+                            steps.push('L');
+                        } else if (field[position.y - 1][position.x] === '#') {
+                            position.direction = '^';
+                            steps.push('R');
+                        } else {
+                            end = true;
+                        }
+                        break;
+                    case '>':
+                        if (field[position.y + 1][position.x] === '#') {
+                            position.y++;
+                            position.direction = 'v';
+                            steps.push('R');
+                        } else if (field[position.y - 1][position.x] === '#') {
+                            position.y--;
+                            position.direction = '^';
+                            steps.push('L');
+                        } else {
+                            end = true;
+                        }
+                        break;
+                }
+            }
+        </script>
+    </body>
+</html>
