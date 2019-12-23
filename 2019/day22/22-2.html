@@ -1,0 +1,60 @@
+<html>
+    <body>
+        <textarea id="input"></textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            function myFunction() {
+                var input = document.getElementById('input').value.split('\n');
+                var stack = new Array();
+                for (var i = 0; i < 119315717514047; i++) {
+                    stack.push(i);
+                }
+
+                for (var i = 0; i < 101741582076661; i++) {
+                    input.forEach(function (element) {
+                        var instruction = element.split(' ');
+                        var tmpStack = new Array();
+                        switch (instruction[0]) {
+                            case 'cut':
+                                if (parseInt(instruction[1]) > 0) {
+                                    for (var i = parseInt(instruction[1]); i < stack.length; i++) {
+                                        tmpStack.push(stack[i]);
+                                    }
+                                    for (var i = 0; i < parseInt(instruction[1]); i++) {
+                                        tmpStack.push(stack[i]);
+                                    }
+                                } else {
+                                    for (var i = stack.length + parseInt(instruction[1]); i < stack.length; i++) {
+                                        tmpStack.push(stack[i]);
+                                    }
+                                    for (var i = 0; i < stack.length + parseInt(instruction[1]); i++) {
+                                        tmpStack.push(stack[i]);
+                                    }
+                                }
+                                break;
+                            case 'deal':
+                                if (instruction[1] !== 'into') {
+                                    var nextPosition = 0;
+                                    for (var i = 0; i < stack.length; i++) {
+                                        tmpStack[nextPosition] = stack[i];
+                                        nextPosition = nextPosition + parseInt(instruction[3]) >= stack.length ? (nextPosition + parseInt(instruction[3])) - stack.length : nextPosition + parseInt(instruction[3]);
+                                    }
+                                } else {
+                                    for (var i = stack.length - 1; i >= 0; i--) {
+                                        tmpStack.push(stack[i]);
+                                    }
+                                }
+                                break;
+                        }
+                        stack = tmpStack;
+                    });
+                }
+
+                document.getElementById('res').value = stack.indexOf(2020);
+            }
+        </script>
+    </body>
+</html>
