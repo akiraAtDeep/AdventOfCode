@@ -61,7 +61,7 @@
                 var min;
                 for (var asd in reactions) {
                     if (reactions[asd].res.element === element) {
-                        min = reactions[asd].res.quantity;
+                        min = parseInt(reactions[asd].res.quantity);
                         requirement = reactions[asd].req;
                     }
                 }

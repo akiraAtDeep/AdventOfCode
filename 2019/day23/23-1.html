@@ -1,0 +1,181 @@
+<html>
+    <body>
+        program:
+        <textarea id="program">3,60,1005,60,18,1101,0,1,61,4,61,104,1011,104,1,1105,1,22,1101,0,0,61,3,62,1007,62,0,64,1005,64,22,3,63,1002,63,2,63,1007,63,256,65,1005,65,48,1101,0,255,61,4,61,4,62,4,63,1105,1,22,99</textarea>
+        <button onclick="myFunction()">DoIt!</button>
+        result:
+        <input id="res" readonly/>
+
+        <script>
+            var programs;
+            var relativeBase;
+            var boot;
+            var packetsTo;
+            var tmpSend;
+            var flags;
+            var address;
+            var pointers;
+            var stop;
+            function myFunction() {
+                address = 0;
+                programs = new Array();
+                relativeBase = new Array();
+                pointers = new Array();
+                packetsTo = new Object();
+                tmpSend = new Object();
+                boot = new Object();
+                flags = new Object();
+                runComputer();
+            }
+
+            function runComputer() {
+                if (programs[address] === undefined) {
+                    programs[address] = document.getElementById('program').value.split(',');
+                }
+                relativeBase[address] = 0;
+                stop = Object.keys(programs[address]).length;
+                var i = pointers[address] !== undefined ? pointers[address] : 0;
+                for (i; i < stop; ) {
+                    var tmp = programs[address][i].toString();
+                    var operation = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 2, 2))) : parseInt(tmp);
+                    var mode1 = tmp.length > 2 ? (parseInt(tmp.substr(tmp.length - 3, 1))) : 0;
+                    var mode2 = tmp.length > 3 ? (parseInt(tmp.substr(tmp.length - 4, 1))) : 0;
+                    var mode3 = tmp.length === 5 ? (parseInt(tmp.substr(tmp.length - 5, 1))) : 0;
+                    i = stuff(operation, mode1, mode2, mode3, i, address);
+                }
+                if (address !== 99) {
+                    runComputer();
+                } else {
+                    console.log('end');
+                }
+            }
+
+            function stuff(operation, mode1, mode2, mode3, i, n) {
+                if (operation === 1) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    var pos2 = getPosition(mode2, 2, i, n);
+                    var pos3 = getPosition(mode3, 3, i, n);
+                    programs[n][pos3] = parseInt(programs[n][pos1]) + parseInt(programs[n][pos2]);
+                    i = i + 4;
+                } else if (operation === 2) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    var pos2 = getPosition(mode2, 2, i, n);
+                    var pos3 = getPosition(mode3, 3, i, n);
+                    programs[n][pos3] = parseInt(programs[n][pos1]) * parseInt(programs[n][pos2]);
+                    i = i + 4;
+                } else if (operation === 3) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    if (boot[n] === undefined) {
+                        boot[n] = false;
+                        flags[n] = true;
+                        programs[n][pos1] = n;
+                        console.log('boot machine: ' + n);
+                    } else {
+                        console.log('machine: ' + n + ' is trying to receve package');
+                        if (packetsTo[n] !== undefined && packetsTo[n] !== null) {
+                            console.log('there\'s a package for machine ' + n + ':  ' + (flags[n] ? packetsTo[n].x + 'x' : packetsTo[n].y + 'y'));
+                            programs[n][pos1] = flags[n] ? packetsTo[n].x : packetsTo[n].y;
+                            if (!flags[n]) {
+                                packetsTo[n] = null;
+                            }
+                            flags[n] = !flags[n];
+                        } else {
+                            programs[n][pos1] = -1;
+                        }
+                    }
+                    i = i + 2;
+                } else if (operation === 4) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    if (tmpSend[n] === undefined) {
+                        tmpSend[n] = new Array();
+                    }
+                    tmpSend[n].push(parseInt(programs[n][pos1]));
+
+                    if (tmpSend[n].length === 3) {
+                        if (tmpSend[n][0] === undefined) {
+                            console.log(tmpSend[n]);
+                        }
+                        console.log('Send package from machine ' + n + ' to machine ' + tmpSend[n][0] + ': x=' + tmpSend[n][1] + ' y=' + tmpSend[n][2]);
+                        packetsTo[tmpSend[n][0]] = {'x': tmpSend[n][1], 'y': tmpSend[n][2]};
+
+                        //qui devo interrompare l'esecuzione della macchina e passo alla macchina successiva
+                        //salvo lo stato attuale della macchina e setto lo stato futuro in maniera da fermarla
+                        pointers[n] = i + 2;
+                        i = stop;
+                        if (tmpSend[n][0] === 255) {
+                            console.log(tmpSend[n][2]);
+                            document.getElementById('res').value = tmpSend[n][2];
+                            address = 99;
+                        } else {
+                            address = tmpSend[n][0];
+                        }
+
+                        tmpSend[n] = new Array();
+                    } else {
+                        i = i + 2;
+                    }
+                } else if (operation === 5) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    var pos2 = getPosition(mode2, 2, i, n);
+                    if (parseInt(programs[n][pos1]) > 0) {
+                        i = parseInt(programs[n][pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 6) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    var pos2 = getPosition(mode2, 2, i, n);
+                    if (parseInt(programs[n][pos1]) === 0) {
+                        i = parseInt(programs[n][pos2]);
+                    } else {
+                        i = i + 3;
+                    }
+                } else if (operation === 7) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    var pos2 = getPosition(mode2, 2, i, n);
+                    var pos3 = getPosition(mode3, 3, i, n);
+                    if (parseInt(programs[n][pos1]) < parseInt(programs[n][pos2])) {
+                        programs[n][pos3] = 1;
+                    } else {
+                        programs[n][pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 8) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    var pos2 = getPosition(mode2, 2, i, n);
+                    var pos3 = getPosition(mode3, 3, i, n);
+                    if (parseInt(programs[n][pos1]) === parseInt(programs[n][pos2])) {
+                        programs[n][pos3] = 1;
+                    } else {
+                        programs[n][pos3] = 0;
+                    }
+                    i = i + 4;
+                } else if (operation === 9) {
+                    var pos1 = getPosition(mode1, 1, i, n);
+                    relativeBase[n] = relativeBase[n] + parseInt(programs[n][pos1]);
+                    i = i + 2;
+                } else if (operation === 99) {
+                    i = programs[n].length;
+                }
+                return(i);
+            }
+
+            function getPosition(mode, nParameter, i, n) {
+                var parameter = 0;
+                switch (mode) {
+                    case 0:
+                        parameter = parseInt(programs[n][i + nParameter]);
+                        break;
+                    case 1:
+                        parameter = i + nParameter;
+                        break;
+                    case 2:
+                        parameter = relativeBase[n] + parseInt(programs[n][i + nParameter]);
+                        break;
+                }
+                return(parameter);
+            }
+
+        </script>
+    </body>
+</html>

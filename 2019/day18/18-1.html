@@ -1,0 +1,45 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <script>
+            var field;
+            var me;
+            var keys;
+            var steps;
+            function myFunction() {
+                var input = document.getElementById("input").value;
+                var rows = input.split('\n');
+
+                me = new Object();
+                field = new Array();
+                keys = new Array();
+                //var doors = new Array();
+
+                rows.forEach(function (element, index) {
+                    var row = element.split('');
+                    field.push(row);
+                    row.forEach(function (element1, index1) {
+                        /*
+                         if (element1.match(/[a-z]/g) !== null) {
+                         keys.push({'key': element1, 'x': index1, 'y': index});
+                         } else if (element1.match(/[A-Z]/g) !== null) {
+                         doors.push({'door': element1, 'x': index1, 'y': index});
+                         } else 
+                         */
+                        if (element1.match(/@/g) !== null) {
+                            me.x = index1;
+                            me.y = index;
+                        }
+                    });
+                });
+            }
+
+            function findPathToNextDoor() {
+                
+            }
+            
+        </script>
+    </body>
+</html>
+-
