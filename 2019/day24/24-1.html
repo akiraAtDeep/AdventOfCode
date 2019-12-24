@@ -1,0 +1,181 @@
+<html>
+    <body>
+        <textarea id='input' rows="6" cols="6">....#
+#..#.
+#..##
+..#..
+#....</textarea>
+        <button onclick="myFunction()">Do It!</button><br>
+        <input id="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                for (var i = 0; i < input.length; i++) {
+                    var row = input[i].split('');
+                    input[i] = row;
+                }
+
+                var previusStates = new Array();
+                var found = false;
+                while (!found) {
+                    //for (var i = 0; i < 10; i++) {
+                    input = nextStep(input);
+
+                    for (var a = 0; a < previusStates.length; a++) {
+                        found = compareStates(previusStates[a], input);
+                        if (found)
+                            a = previusStates.length;
+                    }
+
+                    previusStates.push(input);
+
+                    if (found) {
+                        var str = '';
+                        var biodiversity = 0;
+                        input.forEach(function (element, index) {
+                            str = str + element.join('') + '\n';
+
+                            for (var x = 0; x < element.length; x++) {
+                                if (element[x] === '#') {
+                                    biodiversity = biodiversity + Math.pow(2, (x + (5 * index)));
+                                }
+                            }
+
+                        });
+
+                        console.log(biodiversity);
+                        document.getElementById('res').value = biodiversity;
+                        console.log(str);
+                    }
+                }
+            }
+
+            function compareStates(state0, state1) {
+                var found = true;
+                for (var y = 0; y < state0.length; y++) {
+                    for (var x = 0; x < state0[y].length; x++) {
+                        if (state0[y][x] !== state1[y][x]) {
+                            found = false;
+                            break;
+                        }
+                    }
+                }
+                return found;
+            }
+
+            function nextStep(field) {
+                var newField = JSON.parse(JSON.stringify(field));
+                for (var y = 0; y < field.length; y++) {
+                    for (var x = 0; x < field[y].length; x++) {
+                        var neighbour = 0;
+                        if (y === 0) {
+                            if (x === 0) {
+                                if (field[y][x + 1] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x + 1] === '#')
+                                 neighbour++;*/
+                                if (field[y + 1][x] === '#')
+                                    neighbour++;
+                            } else if (x === field[y].length - 1) {
+                                if (field[y][x - 1] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y + 1][x] === '#')
+                                    neighbour++;
+                            } else {
+                                if (field[y][x - 1] === '#')
+                                    neighbour++;
+                                if (field[y][x + 1] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y + 1][x] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x + 1] === '#')
+                                 neighbour++;*/
+                            }
+                        } else if (y === field.length - 1) {
+                            if (x === 0) {
+                                if (field[y][x + 1] === '#')
+                                    neighbour++;
+                                /*if (field[y - 1][x + 1] === '#')
+                                 neighbour++;*/
+                                if (field[y - 1][x] === '#')
+                                    neighbour++;
+                            } else if (x === field[y].length - 1) {
+                                if (field[y][x - 1] === '#')
+                                    neighbour++;
+                                /*if (field[y - 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y - 1][x] === '#')
+                                    neighbour++;
+                            } else {
+                                if (field[y][x - 1] === '#')
+                                    neighbour++;
+                                if (field[y][x + 1] === '#')
+                                    neighbour++;
+                                /*if (field[y - 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y - 1][x] === '#')
+                                    neighbour++;
+                                /*if (field[y - 1][x + 1] === '#')
+                                 neighbour++;*/
+                            }
+                        } else {
+                            if (x === 0) {
+                                if (field[y - 1][x] === '#')
+                                    neighbour++;
+                                /*if (field[y - 1][x + 1] === '#')
+                                 neighbour++;*/
+                                if (field[y][x + 1] === '#')
+                                    neighbour++;
+                                if (field[y + 1][x] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x + 1] === '#')
+                                 neighbour++;*/
+                            } else if (x === field[y].length - 1) {
+                                /*if (field[y - 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y - 1][x] === '#')
+                                    neighbour++;
+                                if (field[y][x - 1] === '#')
+                                    neighbour++;
+                                /* if (field[y + 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y + 1][x] === '#')
+                                    neighbour++;
+                            } else {
+                                /*if (field[y - 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y - 1][x] === '#')
+                                    neighbour++;
+                                /*if (field[y - 1][x + 1] === '#')
+                                 neighbour++;*/
+                                if (field[y][x - 1] === '#')
+                                    neighbour++;
+                                if (field[y][x + 1] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x - 1] === '#')
+                                 neighbour++;*/
+                                if (field[y + 1][x] === '#')
+                                    neighbour++;
+                                /*if (field[y + 1][x + 1] === '#')
+                                 neighbour++;*/
+                            }
+                        }
+                        if (field[y][x] === '#') {
+                            if (neighbour !== 1)
+                                newField[y][x] = '.';
+                        } else {
+                            if (neighbour === 2 || neighbour === 1)
+                                newField[y][x] = '#';
+                        }
+                    }
+                }
+                return newField;
+            }
+
+        </script>
+    </body>
+</html>
