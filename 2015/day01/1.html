@@ -1,0 +1,22 @@
+<html>
+	<body>
+		<textarea id='input'></textarea>
+		<button onclick="myFunction()">Click me</button>
+                <input id ="res" readonly />
+		<script>
+			function myFunction() {
+				var input = document.getElementById("input").value.split('');
+                                var floar = 0;
+				input.forEach(function(element){
+					if (element === '(') {
+                                            floar++;
+                                        } else {
+                                            floar--;
+                                        }
+				});
+
+				document.getElementById('res').value =  floar;
+			}
+		</script>
+	</body>
+</html>

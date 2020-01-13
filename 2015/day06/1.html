@@ -1,0 +1,63 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            var grid;
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+
+                grid = new Array();
+                for (var y = 0; y < 1000; y++) {
+                    var row = new Array();
+                    for (var x = 0; x < 1000; x++) {
+                        row.push(false);
+                    }
+                    grid.push(row);
+                }
+
+                input.forEach(function (element) {
+                    var asd = element.split(' ');
+                    if (asd[0] === 'toggle') {
+                        changeState(asd[1], asd[3], asd[0]);
+                    } else {
+                        changeState(asd[2], asd[4], asd[1]);
+                    }
+                });
+
+                var count = 0;
+                grid.forEach(function (row) {
+                    row.forEach(function (light) {
+                        if (light)
+                            count++;
+                    });
+                });
+
+                document.getElementById('res').value = count;
+            }
+
+
+            function changeState(startc, endc, operation) {
+                const start = startc.split(',');
+                const end = endc.split(',');
+                for (var y = start[1]; y <= end[1]; y++) {
+                    for (var x = start[0]; x <= end[0]; x++) {
+                        switch (operation) {
+                            case 'on':
+                                grid[y][x] = true;
+                                break;
+                            case 'off':
+                                grid[y][x] = false;
+                                break;
+                            case 'toggle':
+                                grid[y][x] = !grid[y][x];
+                                break;
+                        }
+                    }
+                }
+            }
+
+        </script>
+    </body>
+</html>

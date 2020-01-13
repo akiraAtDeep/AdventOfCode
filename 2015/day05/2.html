@@ -1,0 +1,39 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var count = 0;
+                input.forEach(function (element) {
+                    var asd = element.split('');
+
+                    var found = false;
+                    for (var i = 0; i < asd.length; i++) {
+                        if (i + 2 < asd.length) {
+                            if (asd[i] === asd[i + 2]) {
+                                found = true;
+                                i = asd.length;
+                            }
+                        }
+                    }
+                    if (found) {
+                        for (var i = 0; i < element.length - 1; i++) {
+                            var reg = element.substring(i, i + 2);
+                            var test = JSON.parse(JSON.stringify(asd));
+                            test.splice(i,2);
+                            if (new RegExp(reg, 'g').test(test.join(''))) {
+                                count++;
+                                i = element.length;
+                            }
+                        }
+                    }
+
+                });
+                document.getElementById('res').value = count;
+            }
+        </script>
+    </body>
+</html>

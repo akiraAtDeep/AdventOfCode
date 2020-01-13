@@ -1,0 +1,61 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('');
+                var coordinates = ['0x0'];
+                var xs = 0;
+                var ys = 0;
+                var xr = 0;
+                var yr = 0;
+
+
+
+                for (var i = 0; i < input.length; ) {
+                    switch (input[i]) {
+                        case '^':
+                            xs--;
+                            break;
+                        case 'v':
+                            xs++;
+                            break;
+                        case '<':
+                            ys--;
+                            break;
+                        case '>':
+                            ys++;
+                            break;
+                    }
+                    if (coordinates.indexOf(xs + 'x' + ys) === -1) {
+                        coordinates.push(xs + 'x' + ys);
+                    }
+                    i++;
+                    if (i < input.length) {
+                        switch (input[i]) {
+                            case '^':
+                                xr--;
+                                break;
+                            case 'v':
+                                xr++;
+                                break;
+                            case '<':
+                                yr--;
+                                break;
+                            case '>':
+                                yr++;
+                                break;
+                        }
+                        if (coordinates.indexOf(xr + 'x' + yr) === -1) {
+                            coordinates.push(xr + 'x' + yr);
+                        }
+                        i++;
+                    }
+                }
+                document.getElementById('res').value = coordinates.length;
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,42 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var length = 0;
+
+                input.forEach(function (element) {
+                    var dimension = element.split('x');
+
+                    var a = parseInt(dimension[0]);
+                    var b = parseInt(dimension[1]);
+                    var c = parseInt(dimension[2]);
+
+                    var tmp1 = 2 * a + 2 * b + a * b * c;
+                    var tmp2 = 2 * b + 2 * c + a * b * c;
+                    var tmp3 = 2 * c + 2 * a + a * b * c;
+                    
+                    if (tmp1 <= tmp2) {
+                        if (tmp1 <= tmp3){
+                            length += tmp1;
+                        } else {
+                            length += tmp3;
+                        }
+                    } else {
+                        if (tmp2 <= tmp3){
+                            length += tmp2;
+                        } else {
+                            length += tmp3;
+                        }
+                    }
+
+                });
+
+                document.getElementById('res').value = length;
+            }
+        </script>
+    </body>
+</html>

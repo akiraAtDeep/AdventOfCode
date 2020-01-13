@@ -1,0 +1,45 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var area = 0;
+
+                input.forEach(function (element) {
+                    var dimension = element.split('x');
+
+                    var a = parseInt(dimension[0]) * parseInt(dimension[1]);
+                    var b = parseInt(dimension[1]) * parseInt(dimension[2]);
+                    var c = parseInt(dimension[2]) * parseInt(dimension[0]);
+
+                    var tmpArea = 2 * a + 2 * b + 2 * c;
+                    
+                    if (a <= b) {
+                        if (a <= c) {
+                            //vince a
+                            tmpArea += a;
+                        } else {
+                            //vince c
+                            tmpArea += c;
+                        }
+                    } else {
+                        if (b <= c) {
+                            //vince b
+                            tmpArea += b;
+                        } else {
+                            //vince c
+                            tmpArea += c;
+                        }
+                    }
+                    
+                    area = area + tmpArea;
+                });
+
+                document.getElementById('res').value = area;
+            }
+        </script>
+    </body>
+</html>

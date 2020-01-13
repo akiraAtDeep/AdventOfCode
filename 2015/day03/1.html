@@ -1,0 +1,38 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('');
+                var coordinates = ['0x0'];
+                var x = 0;
+                var y = 0;
+                input.forEach(function (element) {
+                    switch(element) {
+                        case '^':
+                            x--;
+                            break;
+                        case 'v':
+                            x++;
+                            break;
+                        case '<':
+                            y--;
+                            break;
+                        case '>':
+                            y++;
+                            break;
+                    }
+                    if (coordinates.indexOf(x+'x'+y) === -1) {
+                        coordinates.push(x+'x'+y);
+                    } else {
+                        console.log('bum');
+                    }
+                });
+                console.log(coordinates);
+                document.getElementById('res').value = coordinates.length;
+            }
+        </script>
+    </body>
+</html>

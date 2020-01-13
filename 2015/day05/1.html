@@ -1,0 +1,44 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var vowels = ['a', 'e', 'i', 'o', 'u'];
+                var count = 0;
+                input.forEach(function (element) {
+                    var asd = element.split('');
+
+                    var nvowels = 0;
+                    for (var i = 0; i < asd.length; i++) {
+                        if (vowels.indexOf(asd[i]) !== -1) {
+                            nvowels++;
+                            if (nvowels === 3)
+                                i = asd.length;
+                        }
+                    }
+
+                    var double = false;
+                    if (nvowels === 3) {
+                        for (var i = 0; i < asd.length; i++) {
+                            if (i + 1 < asd.length) {
+                                if (asd[i] === asd[i + 1]) {
+                                    double = true;
+                                    i = asd.length;
+                                }
+                            }
+                        }
+                    }
+
+                    if (double && !/ab|cd|pq|xy/g.test(element)) {
+                        count++;
+                    }
+
+                });
+                document.getElementById('res').value = count;
+            }
+        </script>
+    </body>
+</html>
