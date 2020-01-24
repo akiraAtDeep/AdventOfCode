@@ -1,0 +1,102 @@
+<html>
+    <body>
+        <textarea id='input' cols="30">London to Dublin = 464
+London to Belfast = 518
+Dublin to Belfast = 141</textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+            var routes;
+            var cities;
+            var allRoutes;
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                routes = new Array();
+                cities = new Array();
+
+                input.forEach(function (element) {
+                    var tmp = element.split(' ');
+                    routes.push({'from': tmp[0], 'to': tmp[2], 'distance': parseInt(tmp[4])});
+                    if (cities.indexOf(tmp[0]) === -1) {
+                        cities.push(tmp[0]);
+                    }
+                    if (cities.indexOf(tmp[2]) === -1) {
+                        cities.push(tmp[2]);
+                    }
+                });
+
+                //console.log(calculateDistance(cities));
+
+                allRoutes = new Array();
+                cities.forEach(function (element) {
+                    getRoute(element, [element]);
+                });
+
+
+
+                console.log(allRoutes);
+
+                var minDist;
+                var maxDist = 0;
+                allRoutes.forEach(function (element) {
+                    var tmp = calculateDistance(element);
+                    minDist = minDist === undefined || minDist > tmp ? tmp : minDist;
+                    maxDist = maxDist > tmp ? maxDist : tmp;
+                });
+
+                document.getElementById("res").value = minDist;
+                document.getElementById("res2").value = maxDist;
+
+            }
+
+            function getRoute(city, steps) {
+                for (var a = 0; a < routes.length; a++) {
+                    var next;
+                    if (routes[a].from === city) {
+                        next = routes[a].to;
+                        if (next !== undefined && steps.indexOf(next) === -1) {
+                            var tmp = JSON.parse(JSON.stringify(steps));
+                            tmp.push(next);
+                            if (tmp.length < cities.length) {
+                                getRoute(next, tmp);
+                            } else {
+                                allRoutes.push(tmp);
+                            }
+                        }
+                    } else if (routes[a].to === city) {
+                        next = routes[a].from;
+                        if (next !== undefined && steps.indexOf(next) === -1) {
+                            var tmp = JSON.parse(JSON.stringify(steps));
+                            tmp.push(next);
+                            if (tmp.length < cities.length) {
+                                getRoute(next, tmp);
+                            } else {
+                                allRoutes.push(tmp);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            function calculateDistance(route) {
+                var distance = 0;
+                for (var i = 0; i < route.length - 1; i++) {
+                    var find = false;
+                    for (var a = 0; a < routes.length; a++) {
+                        if ((routes[a].from === route[i] && routes[a].to === route[i + 1]) || (routes[a].to === route[i] && routes[a].from === route[i + 1])) {
+                            distance += routes[a].distance;
+                            find = true;
+                            a = routes.length;
+                        }
+                    }
+                    if (!find) {
+                        console.log('non c\'è una rotta fra ' + route[i] + ' e ' + route[i + 1]);
+                    }
+                }
+                return distance;
+            }
+
+        </script>
+    </body>
+</html>
