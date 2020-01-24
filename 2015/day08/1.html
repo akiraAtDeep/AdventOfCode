@@ -1,0 +1,28 @@
+<html>
+    <body>
+        <textarea id='input'>"txqnyvzmibqgjs\xb6xy\x86nfalfyx"</textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var nCode = 0;
+                var nMemory = 0;
+
+                input.forEach(function (element) {
+                    nCode += element.length;
+
+                    element = element.replace(/^"/, '');
+                    element = element.replace(/"$/, '');
+                    element = element.replace(/\\\\/g, '\\');
+                    element = element.replace(/\\"/g, '"');
+                    element = element.replace(/\\x[0-9a-f]{2}/g, 'a');
+
+                    nMemory += element.length;
+                });
+
+                document.getElementById("res").value = nCode - nMemory;
+            }
+        </script>
+    </body>
+</html>

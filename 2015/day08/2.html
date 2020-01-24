@@ -1,0 +1,32 @@
+<html>
+    <body>
+        <textarea id='input'>""
+"abc"
+"aaa\"aaa"
+"\x27"</textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var nCode = 0;
+                var nNewCode = 0;
+
+                input.forEach(function (element) {
+                    nCode += element.length;
+
+                    element = element.replace(/"/g, '\\"');
+                    element = element.replace(/\\(?!"|x)/g, '\\\\');
+                    element = element.replace(/\\x/g, '\\\\x');
+
+                    element = '"' + element + '"';
+                    console.log(element);
+
+                    nNewCode += element.length;
+                });
+
+                document.getElementById("res").value = nNewCode - nCode;
+            }
+        </script>
+    </body>
+</html>

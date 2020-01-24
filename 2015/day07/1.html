@@ -1,0 +1,109 @@
+<html>
+    <body>
+        <textarea id='input'></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+            var wires;
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var inputCopy = document.getElementById("input").value.split('\n');
+                wires = new Object();
+                
+                while (input.length > 0) {
+                    input.forEach(function (element, index, arr) {
+                        var asd = element.split('>');
+
+                        var lol = asd[0].split(' ');
+
+                        var goOn = true;
+                        if (lol[1] === 'AND' || lol[1] === 'OR' || lol[1] === 'LSHIFT' || lol[1] === 'RSHIFT') {
+                            if (/[a-z]/.test(lol[0])) {
+                                if (wires[lol[0]] === undefined) {
+                                    goOn = false;
+                                }
+                            }
+                            if (/[a-z]/.test(lol[2])) {
+                                if (wires[lol[2]] === undefined) {
+                                    goOn = false;
+                                }
+                            }
+                        } else if (lol[0] === 'NOT') {
+                            if (/[a-z]/.test(lol[1])) {
+                                if (wires[lol[1]] === undefined) {
+                                    goOn = false;
+                                }
+                            }
+                        } else {
+                            if (/[a-z]/.test(lol[0])) {
+                                if (wires[lol[0]] === undefined) {
+                                    goOn = false;
+                                }
+                            }
+                        }
+
+                        if (goOn) {
+                            doTheMath(lol, asd[1].replace(" ", ""));
+                            inputCopy.splice(inputCopy.indexOf(element), 1);
+                        }
+                    });
+                    input = JSON.parse(JSON.stringify(inputCopy));
+                }
+
+                console.log(wires);
+                
+                document.getElementById("res").value = wires.a;
+            }
+
+            function getValue(str) {
+                var a = /[a-z]/.test(str[0]) ? wires[str[0]] : parseInt(str[0]);
+                var b = /[a-z]/.test(str[2]) ? wires[str[2]] : parseInt(str[2]);
+                return ({'a': a, 'b': b});
+            }
+
+            function doTheMath(lol, dest) {
+                if (wires[dest] === undefined) {
+                    wires[dest] = 0;
+                }
+                switch (lol[1]) {
+                    case 'AND':
+                        var values = getValue(lol);
+                        wires[dest] = values.a & values.b;
+                        break;
+                    case 'OR':
+                        var values = getValue(lol);
+                        wires[dest] = values.a | values.b;
+                        break;
+                    case 'LSHIFT':
+                        var values = getValue(lol);
+                        wires[dest] = values.a << values.b;
+                        break;
+                    case 'RSHIFT':
+                        var values = getValue(lol);
+                        wires[dest] = values.a >> values.b;
+                        break;
+                    default :
+                        if (lol[0] === 'NOT') {
+                            var a = /[a-z]/.test(lol[1]) ? wires[lol[1]].toString(2) : parseInt(lol[1]).toString(2);
+                            var b = a.split('');
+                            var c = '';
+                            for (var i = 0; i < 16 - b.length; i++) {
+                                c = c + '1';
+                            }
+                            b.forEach(function (element) {
+                                if (element === '1') {
+                                    c = c + '0';
+                                } else {
+                                    c = c + '1';
+                                }
+                            });
+                            wires[dest] = parseInt(c, 2);
+                        } else {
+                            wires[dest] = /[a-z]/.test(lol[0]) ? wires[lol[0]] : parseInt(lol[0]);
+                        }
+                        break;
+                }
+            }
+        </script>
+    </body>
+</html>
