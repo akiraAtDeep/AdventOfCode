@@ -1,0 +1,47 @@
+<html>
+    <body>
+        <textarea id='input' cols="30">11</textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value;
+                var n40;
+                var n50;
+                for (var i = 0; i < 50; i++) {
+                    input = lookAndSay(input);
+                    if (i === 39) {
+                        n40 = input.length;
+                    }
+                    n50 = input.length;
+                }
+                
+                document.getElementById("res").value = n40;
+                document.getElementById("res2").value = n50;
+
+            }
+
+            function lookAndSay(value) {
+                var tmp = value.split('');
+                var ret = '';
+                for (var i = 0; i < tmp.length; ) {
+                    var count = 1;
+                    var exit = i + count >= tmp.length ? true : false;
+                    while (!exit) {
+                        if (tmp[i] !== tmp[i + count]) {
+                            exit = true;
+                        } else {
+                            count++;
+                        }
+                    }
+                    ret = ret + count + tmp[i];
+                    i += count;
+                }
+
+                return ret;
+            }
+
+        </script>
+    </body>
+</html>
