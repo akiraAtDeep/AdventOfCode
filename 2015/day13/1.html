@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30"></textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />
+        <script>
+            var rules;
+            var maxHappiness;
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var people = new Array();
+                rules = new Array();
+                input.forEach(function (element) {
+                    var sentece = element.split(' ');
+                    var p1 = sentece[0];
+                    if (people.indexOf(p1) === -1) {
+                        people.push(p1);
+                    }
+                    var p2 = sentece[10].replace('.', '');
+                    if (people.indexOf(p2) === -1) {
+                        people.push(p2);
+                    }
+                    if (sentece[2] === 'gain') {
+                        rules.push({'p1': p1, 'p2': p2, 'happiness': parseInt(sentece[3])});
+                    } else {
+                        rules.push({'p1': p1, 'p2': p2, 'happiness': -parseInt(sentece[3])});
+                    }
+                });
+
+                console.log(rules);
+                console.log(people);
+                maxHappiness = 0;
+                people.forEach(function (element) {
+                    getPeopleHappiness(element, people, [element]);
+                });
+                
+                document.getElementById("res").value = maxHappiness;
+                
+                //console.log(countHappiness(people, rules));
+            }
+
+            function getPeopleHappiness(person, people, order) {
+                people.splice(people.indexOf(person), 1);
+                if (people.length > 0) {
+                    people.forEach(function (element) {
+                        var tmp = JSON.parse(JSON.stringify(people));
+                        var tmpOrder = JSON.parse(JSON.stringify(order));
+                        tmpOrder.push(element);
+                        getPeopleHappiness(element, tmp, tmpOrder);
+                    });
+                } else {
+                    var tmp = countHappiness(order);
+                    maxHappiness = maxHappiness > tmp ? maxHappiness : tmp;
+                }
+            }
+
+
+
+            function countHappiness(arr) {
+                var happiness = 0;
+                for (var i = 0; i < arr.length; i++) {
+                    var dx = i === arr.length - 1 ? 0 : i + 1;
+                    var sx = i === 0 ? arr.length - 1 : i - 1;
+                    for (var rule in rules) {
+                        if (rules[rule].p1 === arr[i] && (rules[rule].p2 === arr[dx] || rules[rule].p2 === arr[sx])) {
+                            happiness += rules[rule].happiness;
+                        }
+                    }
+                }
+                return happiness;
+            }
+        </script>
+    </body>
+</html>

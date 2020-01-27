@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30"></textarea>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var reindeer = new Array();
+                input.forEach(function (element) {
+                    var tmp = element.split(' ');
+                    reindeer.push({'name': tmp[0], 'speed': parseInt(tmp[3]), 'time': parseInt(tmp[6]), 'rest': parseInt(tmp[13])});
+                });
+                var maxDistance = 0;
+
+                reindeer.forEach(function (element) {
+                    var distance = 0;
+                    var flyTime = 0;
+                    var restTime = 0;
+                    var isFlying = true;
+                    for (var i = 0; i < 2503; i++) {
+                        if (isFlying) {
+                            flyTime++;
+                            distance += element.speed;
+                            if (flyTime === element.time) {
+                                isFlying = false;
+                                flyTime = 0;
+                            }
+                        } else {
+                            restTime++;
+                            if (restTime === element.rest) {
+                                isFlying = true;
+                                restTime = 0;
+                            }
+                        }
+                    }
+                    
+                    maxDistance = maxDistance > distance ? maxDistance : distance;
+                });
+
+                document.getElementById("res").value = maxDistance;
+            }
+        </script>
+    </body>
+</html>

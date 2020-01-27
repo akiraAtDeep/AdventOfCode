@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30">Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
+Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.</textarea><input id ="seconds" type="number" value="1000"/><br>
+        <button onclick="myFunction()">Click me</button>
+        <input id ="res" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var reindeer = new Array();
+                input.forEach(function (element) {
+                    var tmp = element.split(' ');
+                    reindeer.push({
+                        'name': tmp[0],
+                        'speed': parseInt(tmp[3]),
+                        'time': parseInt(tmp[6]),
+                        'rest': parseInt(tmp[13]),
+                        'distance': 0,
+                        'flyTime': 0,
+                        'restTime': 0,
+                        'isFlying': true,
+                        'points': 0
+                    });
+                });
+                var maxDistance = 0;
+                var maxPoint = 0;
+
+                for (var i = 0; i < document.getElementById("seconds").value; i++) {
+                    reindeer.forEach(function (element) {
+                        if (element.isFlying) {
+                            element.flyTime++;
+                            element.distance += element.speed;
+                            if (element.flyTime === element.time) {
+                                element.isFlying = false;
+                                element.flyTime = 0;
+                            }
+                        } else {
+                            element.restTime++;
+                            if (element.restTime === element.rest) {
+                                element.isFlying = true;
+                                element.restTime = 0;
+                            }
+                        }
+                        if (element.distance > maxDistance) {
+                            maxDistance = element.distance;
+                        }
+                    });
+
+                    for (var a = 0; a < reindeer.length; a++) {
+                        if (reindeer[a].distance === maxDistance) {
+                            reindeer[a].points++;
+                            maxPoint = maxPoint > reindeer[a].points ? maxPoint : reindeer[a].points;
+                        }
+                    }
+
+                }
+
+                console.log(maxDistance);
+                console.log(reindeer);
+
+                document.getElementById("res").value = maxPoint;
+            }
+        </script>
+    </body>
+</html>
