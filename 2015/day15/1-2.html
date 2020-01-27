@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30">Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
+Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3</textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+            var asd;
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var ingredients = new Array();
+                input.forEach(function (element) {
+                    element = element.replace(',', '');
+                    var tmp = element.split(' ');
+                    ingredients.push({
+                        'name': tmp[0].replace(':', ''),
+                        'capacity': parseInt(tmp[2]),
+                        'durability': parseInt(tmp[4]),
+                        'flavor': parseInt(tmp[6]),
+                        'texture': parseInt(tmp[8]),
+                        'calories': parseInt(tmp[10])
+                    });
+                });
+                //console.log(ingredients);
+                asd = new Array();
+                getIngredients(1, ingredients.length, []);
+
+                var maxScore = 0;
+                var MaxWith500c = 0;
+                asd.forEach(function (element) {
+                    var tmp = getScore(ingredients, element);
+                    maxScore = maxScore > tmp.score ? maxScore : tmp.score;
+                    if (tmp.calorie === 500) {
+                        MaxWith500c = MaxWith500c > tmp.score ? MaxWith500c : tmp.score;
+                    }
+                });
+
+                document.getElementById("res").value = maxScore;
+                document.getElementById("res2").value = MaxWith500c;
+            }
+
+            function getScore(ingredients, quantity) {
+                var capacity = 0;
+                var durability = 0;
+                var flavor = 0;
+                var texture = 0;
+                var calorie = 0;
+                for (var i = 0; i < ingredients.length; i++) {
+                    capacity += ingredients[i].capacity * quantity[i];
+                    durability += ingredients[i].durability * quantity[i];
+                    flavor += ingredients[i].flavor * quantity[i];
+                    texture += ingredients[i].texture * quantity[i];
+                    calorie += ingredients[i].calories * quantity[i];
+                }
+                return {'score': (capacity > 0 ? capacity : 0) * (durability > 0 ? durability : 0) * (flavor > 0 ? flavor : 0) * (texture > 0 ? texture : 0), 'calorie': calorie};
+            }
+
+            function getIngredients(n, max, prec) {
+                for (var i = 1; i <= 99; i++) {
+                    var tmp = JSON.parse(JSON.stringify(prec));
+                    tmp.push(i);
+                    var count = 0;
+                    tmp.forEach(function (element) {
+                        count += element;
+                    });
+                    if (n < max) {
+                        if (count < 100) {
+                            getIngredients(n + 1, max, tmp);
+                        }
+                    } else {
+                        if (count === 100) {
+                            asd.push(tmp);
+                        }
+                    }
+                }
+            }
+
+        </script>
+    </body>
+</html>
