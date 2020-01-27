@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30">abcdefgh</textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value;
+
+                var goOn = false;
+                while (!goOn) {
+                    var input = incrementString(input);
+                    goOn = testString(input);
+                }
+                document.getElementById("res").value = input;
+                
+                
+                var goOn = false;
+                while (!goOn) {
+                    var input = incrementString(input);
+                    goOn = testString(input);
+                }
+                document.getElementById("res2").value = input;
+                
+            }
+
+            function testString(input) {
+                var goOn = false;
+                var noBanCharacter = true;
+                if (/[iol]/g.test(input)) {
+                    noBanCharacter = false;
+                }
+                var threeLeters = false;
+                var twins = 0;
+                if (noBanCharacter) {
+                    var asd = input.split('');
+                    var lastTwinEnd;
+                    for (var i = 0; i < asd.length; i++) {
+                        if (asd[i] === asd[i + 1] && i !== lastTwinEnd) {
+                            twins++;
+                            lastTwinEnd = i + 1;
+                        }
+                        if (input.charCodeAt(i) + 1 === input.charCodeAt(i + 1) && input.charCodeAt(i) + 2 === input.charCodeAt(i + 2) && !threeLeters) {
+                            threeLeters = true;
+                        }
+                    }
+                    goOn = noBanCharacter && (twins >= 2) && threeLeters ? true : false;
+                }
+
+                return goOn;
+            }
+
+
+            function incrementString(input) {
+                for (var i = input.length - 1; i >= 0; i--) {
+                    var asd = input.charCodeAt(i);
+                    var stop = false;
+                    if (asd < 122) {
+                        asd++;
+                        stop = true;
+                    } else {
+                        asd = 97;
+                    }
+                    var tmp = input.substr(0, i);
+                    tmp += String.fromCharCode(asd);
+                    if (i < input.length - 1) {
+                        tmp += input.substr(i + 1, input.length - i);
+                    }
+                    input = tmp;
+                    if (stop)
+                        i = -1;
+
+                }
+                return input;
+            }
+
+        </script>
+    </body>
+</html>

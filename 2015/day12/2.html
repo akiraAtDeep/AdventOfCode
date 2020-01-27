@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30"></textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value;
+                var json = JSON.parse(input);
+                console.log(json);
+                if (Array.isArray(json)) {
+                    document.getElementById("res").value = findNumersInArray(json, 0);
+                } else if (typeof json === 'object') {
+                    document.getElementById("res").value = findNumersInObj(json, 0);
+                }
+
+            }
+
+            function findNumersInArray(arr) {
+                var sum = 0;
+                arr.forEach(function (element) {
+                    if (Array.isArray(element)) {
+                        sum += findNumersInArray(element);
+                    } else if (typeof element === 'object') {
+                        sum += findNumersInObj(element);
+                    } else if (typeof element === 'number') {
+                        sum += element;
+                    }
+                });
+                return sum;
+            }
+
+            function findNumersInObj(obj) {
+                var sum = 0;
+                var findRed = false;
+                for (var property in obj) {
+                    if (!findRed) {
+                        if (Array.isArray(obj[property])) {
+                            sum += findNumersInArray(obj[property]);
+                        } else if (typeof obj[property] === 'object') {
+                            sum += findNumersInObj(obj[property]);
+                        } else if (typeof obj[property] === 'number') {
+                            sum += obj[property];
+                        } else if (obj[property] === 'red') {
+                            findRed = true;
+                        }
+                    }
+                }
+                return findRed ? 0 : sum;
+            }
+
+
+        </script>
+    </body>
+</html>
