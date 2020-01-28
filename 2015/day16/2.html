@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30"></textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+                var aunts = new Array();
+
+                input.forEach(function (element) {
+                    var tmp = element.split(':');
+                    element = element.replace(/:/g, '');
+                    element = element.replace(/,/g, '');
+                    var lol = element.split(' ');
+
+                    var aunt = new Object();
+                    aunt['name'] = tmp[0];
+                    aunt[lol[2]] = parseInt(lol[3]);
+                    aunt[lol[4]] = parseInt(lol[5]);
+                    aunt[lol[6]] = parseInt(lol[7]);
+                    aunts.push(aunt);
+                });
+
+                var requre = {
+                    'children': 3,
+                    'cats': 7,
+                    'samoyeds': 2,
+                    'pomeranians': 3,
+                    'akitas': 0,
+                    'vizslas': 0,
+                    'goldfish': 5,
+                    'trees': 3,
+                    'cars': 2,
+                    'perfumes': 1
+                };
+
+                for (var i = 0; i < aunts.length; i++) {
+                    var found = true;
+                    for (var asd in aunts[i]) {
+
+                        if (asd === 'cats' || asd === 'trees') {
+                            if (requre[asd] > aunts[i][asd]) {
+                                found = false;
+                            }
+                        } else if (asd === 'pomeranians' || asd === 'goldfish') {
+                            if (requre[asd] < aunts[i][asd]) {
+                                found = false;
+                            }
+                        } else if (requre[asd] !== aunts[i][asd] && asd !== 'name') {
+                            found = false;
+                        }
+                    }
+                    if (found) {
+                        document.getElementById("res").value = aunts[i].name;
+                        i = aunts.length;
+                    } else {
+                    }
+                }
+
+            }
+
+        </script>
+    </body>
+</html>
