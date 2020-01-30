@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30">.#.#.#
+...##.
+#....#
+..#...
+#.#..#
+####..</textarea><br>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+
+                var field = new Array();
+                input.forEach(function (element) {
+                    var row = new Array();
+                    var tmp = element.split('');
+                    tmp.forEach(function (element) {
+                        row.push(element === '#' ? true : false);
+                    });
+                    field.push(row);
+                });
+
+
+
+                for (var i = 0; i < 100; i++) {
+                    field = step(field);
+                }
+
+                var count = 0;
+                field.forEach(function (element) {
+                    element.forEach(function (element) {
+                        if (element) {
+                            count++;
+                        }
+                    });
+                });
+                
+                document.getElementById("res").value = count;
+
+
+            }
+
+            function step(field) {
+                var newField = JSON.parse(JSON.stringify(field));
+                for (var y = 0; y < field.length; y++) {
+                    for (var x = 0; x < field[y].length; x++) {
+                        var neighbors = 0;
+                        if (y === 0) {
+                            if (x === 0) {
+                                neighbors = (field[y][x + 1] ? 1 : 0) + (field[y + 1][x] ? 1 : 0) + (field[y + 1][x + 1] ? 1 : 0);
+                            } else if (x === field[y].length - 1) {
+                                neighbors = (field[y][x - 1] ? 1 : 0) + (field[y + 1][x] ? 1 : 0) + (field[y + 1][x - 1] ? 1 : 0);
+                            } else {
+                                neighbors = (field[y][x + 1] ? 1 : 0) + (field[y][x - 1] ? 1 : 0) + (field[y + 1][x - 1] ? 1 : 0) + (field[y + 1][x] ? 1 : 0) + (field[y + 1][x + 1] ? 1 : 0);
+                            }
+                        } else if (y === field.length - 1) {
+                            if (x === 0) {
+                                neighbors = (field[y][x + 1] ? 1 : 0) + (field[y - 1][x] ? 1 : 0) + (field[y - 1][x + 1] ? 1 : 0);
+                            } else if (x === field[y].length - 1) {
+                                neighbors = (field[y][x - 1] ? 1 : 0) + (field[y - 1][x] ? 1 : 0) + (field[y - 1][x - 1] ? 1 : 0);
+                            } else {
+                                neighbors = (field[y][x + 1] ? 1 : 0) + (field[y][x - 1] ? 1 : 0) + (field[y - 1][x - 1] ? 1 : 0) + (field[y - 1][x] ? 1 : 0) + (field[y - 1][x + 1] ? 1 : 0);
+                            }
+                        } else {
+                            if (x === 0) {
+                                neighbors = (field[y - 1][x] ? 1 : 0) + (field[y - 1][x + 1] ? 1 : 0) + (field[y][x + 1] ? 1 : 0) + (field[y + 1 ][x] ? 1 : 0) + (field[y + 1][x + 1] ? 1 : 0);
+                            } else if (x === field[y].length - 1) {
+                                neighbors = (field[y - 1][x] ? 1 : 0) + (field[y - 1][x - 1] ? 1 : 0) + (field[y][x - 1] ? 1 : 0) + (field[y + 1 ][x] ? 1 : 0) + (field[y + 1][x - 1] ? 1 : 0);
+                            } else {
+                                neighbors = (field[y - 1][x - 1] ? 1 : 0) + (field[y - 1][x] ? 1 : 0) + (field[y - 1][x + 1] ? 1 : 0) +
+                                        (field[y][x - 1] ? 1 : 0) + (field[y][x + 1] ? 1 : 0) +
+                                        (field[y + 1][x - 1] ? 1 : 0) + (field[y + 1][x] ? 1 : 0) + (field[y + 1][x + 1] ? 1 : 0);
+                            }
+                        }
+
+                        if (field[y][x]) {
+                            if (neighbors < 2 || neighbors > 3) {
+                                newField[y][x] = false;
+                            }
+                        } else {
+                            if (neighbors === 3) {
+                                newField[y][x] = true;
+                            }
+                        }
+
+
+                    }
+                }
+                return newField;
+            }
+
+
+        </script>
+    </body>
+</html>
