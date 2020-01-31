@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <input id ="input" type="number" value="3400"/><br>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />
+        <script>
+
+            function myFunction() {
+                var input = document.getElementById("input").value;
+                var houses = new Array();
+                var goOn = true;
+                var i = 2;
+                while (goOn) {
+                    for (var a = 2; a <= i; a++) {
+                        if (i % a === 0) {
+                            if (houses[i] === undefined) {
+                                houses[i] = 10;
+                            }
+                            houses[i] += a * 10;
+
+                            if (houses[i] >= input) {
+                                document.getElementById("res").value = i;
+                                a = i;
+                                goOn = false;
+                            }
+                        }
+                    }
+                    i++;
+                }
+                console.log(houses);
+                //document.getElementById("res").value = res.length;
+            }
+
+        </script>
+    </body>
+</html>
