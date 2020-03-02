@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input'>R8, R4, R4, R8</textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split(',');
+
+                var direction = 'n';
+
+                var x = 0;
+                var y = 0;
+
+                var allLocation = new Array();
+
+                var found = false;
+
+                input.forEach(function (element) {
+                    element = element.replace(' ', '');
+
+                    direction = newDirection(direction, element.substr(0, 1));
+                    for (var a = 0; a < parseInt(element.substr(1, element.length - 1)); a++) {
+                        switch (direction) {
+                            case 'n':
+                                y--;
+                                break;
+                            case 'e':
+                                x++;
+                                break;
+                            case 's':
+                                y++;
+                                break;
+                            case 'w':
+                                x--;
+                                break;
+                        }
+                        
+                        if (!found) {
+                            for (var i = 0; i < allLocation.length; i++) {
+                                if (allLocation[i].x === x && allLocation[i].y === y) {
+                                    found = true;
+                                    i = allLocation.length;
+                                    document.getElementById('res2').value = Math.abs(x) + Math.abs(y);
+                                }
+                            }
+                        }
+                        if (!found) {
+                            allLocation.push({'x': x, 'y': y});
+                        }
+                    }
+                });
+
+                document.getElementById('res').value = Math.abs(x) + Math.abs(y);
+            }
+
+
+            function newDirection(actual, turn) {
+                var ret;
+                if (turn === 'R') {
+                    switch (actual) {
+                        case 'n':
+                            ret = 'e';
+                            break;
+                        case 'e':
+                            ret = 's';
+                            break;
+                        case 's':
+                            ret = 'w';
+                            break;
+                        case 'w':
+                            ret = 'n';
+                            break;
+                    }
+                } else {
+                    switch (actual) {
+                        case 'n':
+                            ret = 'w';
+                            break;
+                        case 'e':
+                            ret = 'n';
+                            break;
+                        case 's':
+                            ret = 'e';
+                            break;
+                        case 'w':
+                            ret = 's';
+                            break;
+                    }
+                }
+                return ret;
+            }
+        </script>
+    </body>
+</html>

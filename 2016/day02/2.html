@@ -1,0 +1,78 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input'>ULL
+RRDDD
+LURDL
+UUUUD</textarea>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />
+        <script>
+            function myFunction() {
+                var input = document.getElementById("input").value.split('\n');
+
+                var x = 0;
+                var y = 2;
+
+                const keypad = [
+                    ['', '', '1', '', ''],
+                    ['', '2', '3', '4', ''],
+                    ['5', '6', '7', '8', '9'],
+                    ['', 'A', 'B', 'C', ''],
+                    ['', '', 'D', '', '']];
+
+                var code = '';
+
+                input.forEach(function (element) {
+                    var tmp = element.split('');
+                    tmp.forEach(function (element) {
+                        switch (element) {
+                            case 'U':
+                                if (y - 1 >= 0) {
+                                    if (keypad[y - 1][x] !== undefined) {
+                                        if (keypad[y - 1][x] !== '') {
+                                            y--;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 'D':
+                                if (y + 1 < keypad.length) {
+                                    if (keypad[y + 1][x] !== undefined) {
+                                        if (keypad[y + 1][x] !== '') {
+                                            y++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 'R':
+                                if (x + 1 < keypad[y].length) {
+                                    if (keypad[y][x + 1] !== undefined) {
+                                        if (keypad[y][x + 1] !== '') {
+                                            x++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case 'L':
+                                if (x - 1 >= 0) {
+                                    if (keypad[y][x - 1] !== undefined) {
+                                        if (keypad[y][x - 1] !== '') {
+                                            x--;
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    });
+                    code += keypad[y][x];
+                });
+
+                document.getElementById('res').value = code;
+            }
+
+        </script>
+    </body>
+</html>
