@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <meta charset="windows-1252">
+    </head>
+    <body>
+        <textarea id='input' cols="30">20
+15
+10
+5
+5</textarea><input id ="eggnog" type="number" value="25"/><br>
+        <button onclick="myFunction()">Click me</button>
+        part1:<input id ="res" readonly />part2:<input id ="res2" readonly />
+        <script>
+			var containsers;
+			var count;
+			var min;
+			
+			var nTimes;
+            function myFunction() {
+                containsers = document.getElementById("input").value.split('\n');
+                var eggnog = document.getElementById("eggnog").value;
+                
+				count = 0;
+				min = 0;
+				nTimes = new Array();
+				
+				for (var i=0; i<containsers.length; i++) {
+					nextContainer(i,eggnog,0);
+				}
+				
+				var count2 = 0;
+
+				nTimes.forEach(function(element){
+					if (element === min) count2++;
+				});
+				
+				
+				document.getElementById("res").value = count;
+				document.getElementById("res2").value = count2;
+				
+            }
+			
+			function nextContainer(id,remain, seq){
+				remain = remain - containsers[id];
+				seq++;
+				if (remain === 0) {
+					count++;
+					nTimes.push(seq);
+					min = seq < min || min === 0 ? seq : min;
+					return;
+				} else if (remain < 0) {
+					return;
+				} else {
+					for (var i=id+1; i<containsers.length; i++) {
+						nextContainer(i,remain, seq);
+					}
+				}
+			}
+			
+			
+
+        </script>
+    </body>
+</html>
