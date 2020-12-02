@@ -1,0 +1,44 @@
+<html>
+	<body>
+		<textarea id='input'>1721
+979
+366
+299
+675
+1456</textarea>
+		<button onclick="myFunction()">Click me</button>
+		part1:<input type='number' id='res1' readonly></input>
+		part2:<input type='number' id='res2' readonly></input>
+		<script>
+			function myFunction() {
+				var input = document.getElementById("input").value.split('\n');
+				
+				var find1 = false;
+				var find2 = false;
+				
+				while (!find1 && !find2) {
+					for (var a=0; a<input.length;a++){
+						for (var b=a+1; b<input.length;b++){
+							//prima parte: trovare due numeri che sommati danno 2020 e moltiplicarli fra loro
+							if (!find1) {
+								if (parseInt(input[a]) + parseInt(input[b]) === 2020) {
+									find1 = true;
+									document.getElementById("res1").value = parseInt(input[a]) * parseInt(input[b]) ;
+								}
+							}
+							//seconda parte: itero un altra volta l'input per trovare tre numeri che sommati danno 2020 e li moltiplico fra loro
+							if (!find2) {
+								for (var c=b+1; c<input.length;c++){
+									if (parseInt(input[a]) + parseInt(input[b]) + parseInt(input[c]) === 2020) {
+										find2 = true;
+										document.getElementById("res2").value = parseInt(input[a]) * parseInt(input[b])  * parseInt(input[c]);
+									}
+								}
+							}
+						}
+					}			
+				}
+			}
+		</script>
+	</body>
+</html>

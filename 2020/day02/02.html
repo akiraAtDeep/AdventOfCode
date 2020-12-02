@@ -1,0 +1,44 @@
+<html>
+	<body>
+		<textarea id='input'>1-3 a: abcde
+1-3 b: cdefg
+2-9 c: ccccccccc</textarea>
+		<button onclick="myFunction()">Click me</button>
+		part1:<input type='number' id='res1' readonly></input>
+		part2:<input type='number' id='res2' readonly></input>
+		<script>
+			function myFunction() {
+				var input = document.getElementById("input").value.split('\n');
+				
+				var tests = new Array();
+				
+				input.forEach(function (element) {
+					var tmp = element.split(" ");
+					tests.push({"minMax":tmp[0].split("-"), "letter":tmp[1].replace(":",""), "pwd":tmp[2]});
+				});
+				
+				var count1 = 0;
+				var count2 = 0;
+				
+				tests.forEach(function (element){
+					var cnt = 0;
+					for(var i=0; i<element.pwd.length; i++){
+						if (element.pwd[i] === element.letter) cnt++;
+					}
+					if (cnt >= element.minMax[0] && cnt <= element.minMax[1]) count1++;
+					
+					if (element.pwd[element.minMax[0]-1] === element.letter) {
+						if (element.pwd[element.minMax[1]-1] !== element.letter) count2++;
+					} else {
+						if (element.pwd[element.minMax[1]-1] === element.letter) count2++;
+					}
+					
+					
+				});
+				
+				document.getElementById("res1").value = count1;
+				document.getElementById("res2").value = count2;
+			}
+		</script>
+	</body>
+</html>
