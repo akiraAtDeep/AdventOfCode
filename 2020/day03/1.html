@@ -32,24 +32,23 @@
 				var count2=0;
 				var count3=0;
 				var count4=0;
-				
+
 				while (y < input.length-1 ) {
-					x = x+3 < input[0].length ? x+3 : x+3-input[0].length;
-					x1 = x1+1 < input[0].length ? x1+1 : x1+1-input[0].length;
-					x2 = x2+5 < input[0].length ? x2+5 : x2+5-input[0].length;
-					x3 = x3+7 < input[0].length ? x3+7 : x3+7-input[0].length;
-					x4 = x4+1 < input[0].length ? x4+1 : x4+1-input[0].length;
+					x = (x+3)%input[y].length;
+					x1 = (x1+1)%input[y].length;
+					x2 = (x2+5)%input[y].length;
+					x3 = (x3+7)%input[y].length;
+					x4 = (x4+1)%input[y].length;
 					y1 += 2;
 					y += 1;
 
-						if (input[y][x] === "#") count++;
-						if (input[y][x1] === "#") count1++;
-						if (input[y][x2] === "#") count2++;
-						if (input[y][x3] === "#") count3++;
-						if (y1< input.length-1) if (input[y1][x4] === "#") count4++;
-					
+					if (input[y][x] === "#") count++;
+					if (input[y][x1] === "#") count1++;
+					if (input[y][x2] === "#") count2++;
+					if (input[y][x3] === "#") count3++;
+					if (y1< input.length-1) if (input[y1][x4] === "#") count4++;
 				}
-
+				
 				document.getElementById("res1").value = count;
 				document.getElementById("res2").value = count * count1 * count2 * count3 * count4;
 			}
