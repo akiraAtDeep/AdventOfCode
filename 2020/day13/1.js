@@ -2,7 +2,7 @@ const { toNamespacedPath, parse } = require('path');
 
 fs = require('fs')
 
-fs.readFile('input_test.txt', 'utf8', function (err,data) {
+fs.readFile('input.txt', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -17,12 +17,13 @@ function day(input) {
   var minDep;
 
   var bus = new Array();
-  var count = 0;
+  var count = 1;
 
   orari.forEach(element => {
     if (element !== 'x') {
       var busId = parseInt(element);
       bus.push({'bus': busId, 'step': count});
+      count = 1;
       var i = 1;
       var goOn = true;
       while (goOn) {
@@ -36,11 +37,52 @@ function day(input) {
         }
         i++;
       }
+    } else {
+      count++;
     }
-    count++;
   });
 
   console.log('Parte 1 ' + minDep * minTime);
+
+  findFirst();
+  //console.log(findNext(1068781, 1));
+
+  function findFirst() {
+    var i=1;
+    var i2=1;
+    var find = false;
+
+    while (!find) {
+      if ((bus[0].bus*i)+bus[1].step < bus[1].bus*i2) i++;
+      else if ((bus[0].bus*i)+bus[1].step > bus[1].bus*i2) i2++;
+      else if ((bus[0].bus*i)+bus[1].step === bus[1].bus*i2) {
+        if(findNext(bus[0].bus*i, 1)){
+          console.log(bus[0].bus*i);
+          break;
+        } else {
+          i++;
+        }
+      }
+    }
+    return false;
+  }
+
+  function findNext(past,id) {
+    var i=Math.round(past/bus[id].bus)-1;
+    while (true) {
+      if (past+bus[id].step > bus[id].bus*i) i++;
+      else if (past+bus[id].step === bus[id].bus*i) {
+        if (id+1<=bus.length-1) {
+          return (findNext(bus[id].bus*i,id+1));
+        }
+        return true;
+      } else {
+        return false;
+      }
+    }
+    
+  }
+
 
   /*
   var orari = new Array();
