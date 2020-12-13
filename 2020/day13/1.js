@@ -45,7 +45,6 @@ function day(input) {
   console.log('Parte 1 ' + minDep * minTime);
 
   findFirst();
-  //console.log(findNext(1068781, 1));
 
   function findFirst() {
     var i=1;
@@ -57,7 +56,7 @@ function day(input) {
       else if ((bus[0].bus*i)+bus[1].step > bus[1].bus*i2) i2++;
       else if ((bus[0].bus*i)+bus[1].step === bus[1].bus*i2) {
         if(findNext(bus[0].bus*i, 1)){
-          console.log(bus[0].bus*i);
+          console.log('Parte 1 ' + bus[0].bus*i);
           break;
         } else {
           i++;
@@ -82,38 +81,4 @@ function day(input) {
     }
     
   }
-
-
-  /*
-  var orari = new Array();
-
-  for (var i=0; i<bus.length; i++) {
-    var tmp = new Array();
-    for (var a=1000000; a<10000000; a++) {
-      tmp.push(bus[i].bus*a);
-    }
-    orari.push(tmp);
-    console.log(tmp[tmp.length-1]);
-  }
-
-  var tmp = new Array();
-  var last = 0;
-  for (var i=0; i<bus.length-1; i++) {
-    var found = false;
-    for (var a=last; a<orari[i].length; a++) {
-      if (found) break;
-      for (var b=0; b<orari[i+1].length; b++) {
-        if (orari[i+1][b] === orari[i][a] + bus[i+1].step) {
-          found = true;
-          last = b;
-          tmp.push(orari[i][a]);
-          break;
-        }
-      }
-    }
-    console.log(tmp[i]);
-  }
-
-  console.log('Parte 2 ' + tmp[0]);
-  */
 }
