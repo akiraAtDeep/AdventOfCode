@@ -2,7 +2,7 @@ const { toNamespacedPath, parse } = require('path');
 
 fs = require('fs')
 
-fs.readFile('input_test.txt', 'utf8', function (err,data) {
+fs.readFile('input.txt', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -12,27 +12,25 @@ fs.readFile('input_test.txt', 'utf8', function (err,data) {
 function day(input) {
   input = input.split(',');
 
+
+  var asd = new Object();
   for (var i=0; i<input.length; i++) {
     input[i] = parseInt(input[i]);
+    if (i < input.length-1) asd[parseInt(input[i])] = i;
   }
 
-  var asd = JSON.parse(JSON.stringify(input));
-
-  for (var i=input.length; i< 30000000; i++) {
-    if (i===2020) console.log("Parte 1: " + input[i-1]);
-    var found = false;
-    var prev = 0;
-    for (var a=input.length-2; a>=0; a--) {
-      if (input[i-1] === input[a]) {
-        found = true;
-        prev = a;
-        break;
-      }
+  var target = 30000000;
+  for (var i=input.length-1; i<target-1; i++) {
+    if(asd[input[i]] !== undefined) {
+      input.push((i+1)-(asd[input[i]]+1));
+    } else {
+      input.push(0);
     }
+    asd[input[i]] = i;
 
-    if (found) input.push(i-(prev+1));
-    else input.push(0);
+    if (i%((target/100)*5)===0) console.log((i/(target/100)) + '%');
   }
-  console.log("Parte 2: " + input[input.length-1]);
+
+  console.log(input[input.length-1]);
 
 }
