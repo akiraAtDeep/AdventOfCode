@@ -2,7 +2,7 @@ const { toNamespacedPath, parse } = require('path');
 
 fs = require('fs')
 
-fs.readFile('input.txt', 'utf8', function (err,data) {
+fs.readFile('input_test.txt', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -47,8 +47,10 @@ function day(input) {
   findFirst();
 
   function findFirst() {
-    var i=1;
+    var i=1;    //nel caso generico parto dalla prima ripartenza del primo bus
     var i2=1;
+    //var i=Math.round(100000000000000/bus[0].bus); //con l'input vero, so che la risposta è sopra a 100000000000000, 
+    //var i2=Math.round(100000000000000/bus[1].bus);  //quindi parto da li!
     var find = false;
 
     while (!find) {

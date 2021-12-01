@@ -2,7 +2,7 @@ const { toNamespacedPath, parse } = require('path');
 
 fs = require('fs')
 
-fs.readFile('input.txt', 'utf8', function (err,data) {
+fs.readFile('input_test.txt', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -16,7 +16,7 @@ function day(input) {
     input[i] = parseInt(input[i]);
     if (input[i]>max) max = input[i];
   }
-
+  input.push(0);
   input.sort(function(a, b){return a-b});
   
   var step1 = 0;
@@ -31,24 +31,30 @@ function day(input) {
   console.log('parte 1 ' + (step1*step3));
 
   var count = 0;
-  tree(0);
-  
+
+  var stepOne = new Object();
+  var stepThree = new Object();
+
+  for (var a=0; a<input.length; a++) {
+    for (var b=a+1; b<input.length; b++) {
+      if (input[b] === input[a]+1) stepOne[a] = b;
+      else if (input[b] === input[a]+3) stepThree[a] = b;
+    }
+  }
+
+
+  tree(0,[]);
+  /*
   function tree(start) {
-    var find1 = false;
-    var find2 = false;
-    var find3 = false;
     for (var i=0; i<input.length; i++) {
       var find = false;
       if (input[i] === start + 1) {
-        find1 = true;
         find = true;
       }
       if (input[i] === start + 2) {
-        find2 = true;
         find = true;
       }
       if (input[i] === start + 3) {
-        find3 = true;
         find = true;
       }
 
@@ -59,13 +65,24 @@ function day(input) {
         } else {
           tree(input[i]);
         }
-        if (find1 && find2 && find3) break;
       }
 
     }
     return false;
   }
-  
+  */
+  function tree(start, seq) {
+    if (input[start] === max) {
+      console.log(seq.join());
+      count++;
+      return true;
+    } else if (start !== undefined) {
+      seq.push(start);
+      tree(stepOne[start], seq);
+      tree(stepThree[start], seq);
+      return false;
+    }
+  }
 
 
   console.log('parte 2 ' + count);

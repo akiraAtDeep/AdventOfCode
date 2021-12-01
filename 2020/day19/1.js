@@ -74,7 +74,7 @@ function day(input) {
             tmp[i] = element;
             tmp = tmp.join(',');
             if (!addTried(tmp)) {
-              if (ruleTried.length % 100 === 0) console.log(ruleTried.length);
+              if (ruleTried.length % 10000 === 0) console.log(ruleTried.length);
               execRules(tmp);
             }
           }

@@ -42,7 +42,7 @@ function day07(input) {
   seatchBag('shiny gold bag', bags);
 
   console.log("Parte 1: " + res.length);
-  console.log("Parte 1: " + innerBag('shiny gold bag', bags));
+  console.log("Parte 2: " + innerBag('shiny gold bag', bags));
 }
 
 function addBag(bag) {
