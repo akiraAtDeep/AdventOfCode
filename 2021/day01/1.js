@@ -8,18 +8,19 @@ fs.readFile('input.txt', 'utf8', function (err,input) {
     return console.log(err);
   }
   input = input.trim().split('\n');
-  var slide = new Array();
+  
   var count = 0;
-  for (var i=0; i<input.length; i++){
-    if (i>0) if (parseInt(input[i]) > parseInt(input[i-1])) count++;
+  var count2 = 0;
+  var last = null;
+  for (var i=0; i<input.length; i++) {
+    if (i-1>=0 && parseInt(input[i]) > parseInt(input[i-1])) count++;
     if (i+2 < input.length) {
-      slide.push(parseInt(input[i]) + parseInt(input[i+1]) + parseInt(input[i+2]));
+      var tmp = parseInt(input[i]) + parseInt(input[i+1]) + parseInt(input[i+2]);
+      if (last !== null && tmp > last) count2++;
+      last = tmp;
     }
-  };
-  console.log(count);
-  count = 0;
-  for (var i=1; i<slide.length; i++) {
-    if (slide[i] > slide[i-1]) count++;
   }
-  console.log(count);
+
+  console.log("La prima risposta: " + count);
+  console.log("La seconda risposta: " + count2);
 });
